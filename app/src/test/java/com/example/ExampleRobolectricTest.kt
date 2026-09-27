@@ -64,6 +64,17 @@ class ExampleRobolectricTest {
     }
 
     @Test
+    fun testNetworkClientTimeoutsAreMinimum120Seconds() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val service = com.example.ai.GeminiMedicalService(context)
+        val client = service.okHttpClient
+        assertTrue(client.connectTimeoutMillis >= 120_000)
+        assertTrue(client.readTimeoutMillis >= 120_000)
+        assertTrue(client.writeTimeoutMillis >= 120_000)
+        assertTrue(client.callTimeoutMillis >= 120_000)
+    }
+
+    @Test
     fun testGeminiRequestConfiguresResponseMimeType() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val service = com.example.ai.GeminiMedicalService(context)

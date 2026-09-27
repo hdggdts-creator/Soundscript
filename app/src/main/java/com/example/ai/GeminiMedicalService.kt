@@ -26,11 +26,11 @@ import java.util.concurrent.TimeUnit
 
 class GeminiMedicalService(private val context: Context) {
 
-    private val okHttpClient = OkHttpClient.Builder()
-        .connectTimeout(60, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
-        .writeTimeout(60, TimeUnit.SECONDS)
-        .callTimeout(60, TimeUnit.SECONDS)
+    val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(120, TimeUnit.SECONDS)
+        .readTimeout(120, TimeUnit.SECONDS)
+        .writeTimeout(120, TimeUnit.SECONDS)
+        .callTimeout(120, TimeUnit.SECONDS)
         .build()
 
     private val moshi = Moshi.Builder()
