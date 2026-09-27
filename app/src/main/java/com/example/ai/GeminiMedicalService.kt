@@ -83,7 +83,12 @@ class GeminiMedicalService(private val context: Context) {
             val requestJson = buildGeminiRequest(
                 audioData = base64Data,
                 audioMimeType = mimeType,
-                textPrompt = "Analyze this medical lecture recording. Transcribe and extract comprehensive, high-yield English-only medical study revision notes according to the specified instructions. ${if (lectureTitleHint.isNotEmpty()) "Context: $lectureTitleHint ($specialtyHint)" else ""}"
+                textPrompt = """
+                    Analyze this medical lecture audio recording. Transcribe the core clinical concepts and synthesize rigorous, high-yield English-only medical study revision notes.
+                    ${if (lectureTitleHint.isNotEmpty()) "Context: $lectureTitleHint ($specialtyHint)" else ""}
+                    
+                    CRITICAL: You MUST respond ONLY with a valid JSON object matching the required schema. Do NOT wrap in markdown fences or include explanatory text.
+                """.trimIndent()
             )
 
             callGeminiApi(requestJson, apiKey, audioFile.length() / 16000)
@@ -114,7 +119,10 @@ class GeminiMedicalService(private val context: Context) {
                     ---
                     $transcriptOrNotes
                     ---
-                    Analyze this medical lecture thoroughly and extract structured English-only study revision notes. ${if (lectureTitleHint.isNotEmpty()) "Title/Topic: $lectureTitleHint. Specialty: $specialtyHint." else ""}
+                    Analyze this medical lecture thoroughly and extract structured English-only study revision notes.
+                    ${if (lectureTitleHint.isNotEmpty()) "Title/Topic: $lectureTitleHint. Specialty: $specialtyHint." else ""}
+                    
+                    CRITICAL: You MUST respond ONLY with a valid JSON object matching the required schema. Do NOT wrap in markdown fences or include explanatory text.
                 """.trimIndent()
             )
 
@@ -125,7 +133,7 @@ class GeminiMedicalService(private val context: Context) {
         }
     }
 
-    private fun buildGeminiRequest(
+    fun buildGeminiRequest(
         audioData: String?,
         audioMimeType: String?,
         textPrompt: String
@@ -150,22 +158,63 @@ class GeminiMedicalService(private val context: Context) {
             You are SoundScript, an elite medical education scribe and revision assistant for medical students and clinicians.
             Your job is to convert spoken medical lectures into clean, rigorous, high-yield English-only revision notes.
             
-            MANDATORY GUIDELINES:
+            MANDATORY SCHEMA AND FORMAT REQUIREMENTS:
             1. Output language: English only, regardless of the input language spoken in the lecture.
-            2. Structured sections:
-               - title: Clear medical topic name (e.g., 'Cardiology: Acute Coronary Syndromes').
-               - specialty: Medical specialty (Cardiology, Neurology, Pharmacology, Pulmonology, Pediatrics, Surgery, etc.).
-               - summary: Comprehensive 2-3 paragraph clinical overview.
-               - coreConcepts: Fundamental pathophysiology, mechanisms of action, and anatomical principles.
-               - importantPoints: Essential lecture takeaways.
-               - classifications: Structured staging, grading, and criteria systems (e.g. NYHA, Killip, Wells, Glasgow).
-               - clinicalPoints: Symptoms, signs, diagnostic criteria, lab cutoffs, imaging findings, and gold standard tests.
-               - management: First-line, second-line, acute emergency measures, lifestyle, and contraindications.
-               - numbersAndDoses: STRICT RULE: Report exact numerical values and dosages taught by the lecturer. If the lecturer was ambiguous or unclear about a dose or cutoff, explicitly set isUnclear: true and note '[unclear]' in the context. Never invent clinical dosages!
-               - examEmphasis: High-yield board exam pearls, classic buzzwords, common question traps, and starred concepts.
-               - questionAnswers: Preserve any question-and-answer exchanges or hypothetical questions posed by the lecturer with detailed answers.
-               - highestYieldPoints: 4 to 6 rapid-fire high-yield bullet points for quick review right before an exam.
-            3. Privacy & Raw Transcript Rule: DO NOT output or echo raw speech transcript. Output ONLY the structured study notes in clean JSON.
+            2. Output format: You MUST return a single valid JSON object strictly matching this schema:
+               {
+                 "title": "string (clear medical topic name)",
+                 "specialty": "string (Cardiology, Neurology, Pharmacology, Pulmonology, Pediatrics, Surgery, etc.)",
+                 "summary": "string (comprehensive 2-3 paragraph clinical overview)",
+                 "coreConcepts": ["string (fundamental pathophysiology, mechanism of action, anatomy)"],
+                 "importantPoints": ["string (essential lecture takeaways)"],
+                 "classifications": [
+                   {
+                     "title": "string",
+                     "category": "string",
+                     "criteria": ["string"]
+                   }
+                 ],
+                 "clinicalPoints": [
+                   {
+                     "category": "string",
+                     "description": "string",
+                     "isHighYield": true
+                   }
+                 ],
+                 "management": [
+                   {
+                     "line": "string (First-line, Second-line, Acute, Lifestyle)",
+                     "intervention": "string",
+                     "rationale": "string"
+                   }
+                 ],
+                 "numbersAndDoses": [
+                   {
+                     "item": "string",
+                     "exactValue": "string",
+                     "context": "string",
+                     "isUnclear": false
+                   }
+                 ],
+                 "examEmphasis": [
+                   {
+                     "topic": "string",
+                     "buzzword": "string",
+                     "pearl": "string",
+                     "trapOrWarning": "string"
+                   }
+                 ],
+                 "questionAnswers": [
+                   {
+                     "question": "string",
+                     "answer": "string",
+                     "lecturerNote": "string"
+                   }
+                 ],
+                 "highestYieldPoints": ["string (4-6 high-yield bullets for rapid pre-exam review)"]
+               }
+            3. Numbers and Doses Rule: Report exact numerical values and dosages taught by the lecturer. If the lecturer was ambiguous or unclear about a dose or cutoff, explicitly set isUnclear: true and note '[unclear]' in the context. Never invent clinical dosages!
+            4. Privacy & Raw Transcript Rule: DO NOT output or echo raw speech transcript. Output ONLY valid JSON matching the schema.
         """.trimIndent()
 
         val generationConfig = JSONObject().apply {
@@ -227,13 +276,36 @@ class GeminiMedicalService(private val context: Context) {
         }
     }
 
-    private fun parseMedicalNoteJson(jsonString: String, durationSec: Int): MedicalLectureNote {
+    /**
+     * Fallback parser to strip markdown code fences (```json, ```) and extract clean JSON.
+     */
+    fun stripMarkdownFences(raw: String): String {
+        var trimmed = raw.trim()
         // Strip markdown code fences if model enclosed them
-        val cleaned = jsonString.trim()
-            .removePrefix("```json")
-            .removePrefix("```")
-            .removeSuffix("```")
-            .trim()
+        val fencePattern = Regex("""^```(?:json)?\s*([\s\S]*?)\s*```$""", RegexOption.IGNORE_CASE)
+        val match = fencePattern.find(trimmed)
+        if (match != null) {
+            trimmed = match.groupValues[1].trim()
+        } else {
+            // Check if there are markdown fences somewhere within the string
+            val embeddedFence = Regex("""```(?:json)?\s*([\s\S]*?)\s*```""", RegexOption.IGNORE_CASE)
+            val embeddedMatch = embeddedFence.find(trimmed)
+            if (embeddedMatch != null) {
+                trimmed = embeddedMatch.groupValues[1].trim()
+            } else {
+                // If it contains a JSON object, slice between the first '{' and last '}'
+                val firstBrace = trimmed.indexOf('{')
+                val lastBrace = trimmed.lastIndexOf('}')
+                if (firstBrace != -1 && lastBrace != -1 && lastBrace > firstBrace) {
+                    trimmed = trimmed.substring(firstBrace, lastBrace + 1).trim()
+                }
+            }
+        }
+        return trimmed
+    }
+
+    fun parseMedicalNoteJson(jsonString: String, durationSec: Int): MedicalLectureNote {
+        val cleaned = stripMarkdownFences(jsonString)
 
         val obj = JSONObject(cleaned)
 

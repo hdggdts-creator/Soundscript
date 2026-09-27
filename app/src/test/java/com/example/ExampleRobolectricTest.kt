@@ -64,6 +64,61 @@ class ExampleRobolectricTest {
     }
 
     @Test
+    fun testGeminiRequestConfiguresResponseMimeType() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val service = com.example.ai.GeminiMedicalService(context)
+        val request = service.buildGeminiRequest(null, null, "Test prompt")
+        val config = request.getJSONObject("generationConfig")
+        assertEquals("application/json", config.getString("responseMimeType"))
+    }
+
+    @Test
+    fun testStripMarkdownFences() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val service = com.example.ai.GeminiMedicalService(context)
+
+        // Case 1: ```json ... ```
+        val fencedJson = "```json\n{\"title\": \"Cardiology\"}\n```"
+        assertEquals("{\"title\": \"Cardiology\"}", service.stripMarkdownFences(fencedJson))
+
+        // Case 2: ``` ... ``` without json tag
+        val plainFenced = "```\n{\"title\": \"Pulmonology\"}\n```"
+        assertEquals("{\"title\": \"Pulmonology\"}", service.stripMarkdownFences(plainFenced))
+
+        // Case 3: Embedded fences with surrounding explanation
+        val embedded = "Here is your JSON output:\n```json\n{\"title\": \"Neurology\"}\n```\nHope this helps!"
+        assertEquals("{\"title\": \"Neurology\"}", service.stripMarkdownFences(embedded))
+
+        // Case 4: Raw JSON without fences
+        val raw = "{\"title\": \"Pediatrics\"}"
+        assertEquals("{\"title\": \"Pediatrics\"}", service.stripMarkdownFences(raw))
+    }
+
+    @Test
+    fun testParseMedicalNoteWithMarkdownFences() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val service = com.example.ai.GeminiMedicalService(context)
+        val mockResponse = """
+            ```json
+            {
+              "title": "Heart Failure Overview",
+              "specialty": "Cardiology",
+              "summary": "Clinical overview of HFrEF and HFpEF.",
+              "coreConcepts": ["Ventricular remodeling"],
+              "importantPoints": ["LVEF <= 40% defines HFrEF"],
+              "highestYieldPoints": ["Spironolactone reduces mortality in NYHA II-IV"]
+            }
+            ```
+        """.trimIndent()
+
+        val note = service.parseMedicalNoteJson(mockResponse, 300)
+        assertEquals("Heart Failure Overview", note.title)
+        assertEquals("Cardiology", note.specialty)
+        assertEquals(1, note.coreConcepts.size)
+        assertEquals("Ventricular remodeling", note.coreConcepts[0])
+    }
+
+    @Test
     fun testUserProfileModel() {
         val profile = com.example.firebase.UserProfile(
             uid = "user_123",
