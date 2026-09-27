@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:pivotX="54"
+        android:pivotY="54">
+        <!-- Medical Stethoscope Bell and Tubing -->
+        <!-- Stethoscope Head / Chestpiece -->
+        <path
+            android:fillColor="#14B8A6"
+            android:pathData="M54,66 m-10,0 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M54,66 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0" />
+        <!-- Tubing -->
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="3.5"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:fillColor="#00000000"
+            android:pathData="M40,32 C40,48 48,56 54,56 C60,56 68,48 68,32" />
+        <!-- Earpieces -->
+        <path
+            android:fillColor="#38BDF8"
+            android:pathData="M37,30 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+        <path
+            android:fillColor="#38BDF8"
+            android:pathData="M71,30 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+
+        <!-- Sound Wave & ECG Pulse across middle -->
+        <path
+            android:strokeColor="#38BDF8"
+            android:strokeWidth="2.8"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:fillColor="#00000000"
+            android:pathData="M24,54 L36,54 L41,43 L47,65 L53,48 L58,58 L63,54 L84,54" />
+
+        <!-- Microphone / Note accent at center -->
+        <path
+            android:fillColor="#F43F5E"
+            android:pathData="M54,42 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+    </group>
+</vector>

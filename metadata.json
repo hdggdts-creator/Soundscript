@@ -1,0 +1,6 @@
+{
+  "name": "SoundScript",
+  "description": "Convert medical audio lectures into structured English study revision notes with high-yield points, exact doses, and PDF export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
