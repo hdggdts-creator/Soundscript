@@ -37,7 +37,7 @@ class GeminiMedicalService(private val context: Context) {
         .addLast(KotlinJsonAdapterFactory())
         .build()
 
-    private val defaultModel = "gemini-3.5-flash"
+    val defaultModel = "gemini-3.5-flash"
 
     /**
      * Resolves the active API key:
