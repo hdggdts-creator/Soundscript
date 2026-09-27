@@ -30,6 +30,7 @@ class GeminiMedicalService(private val context: Context) {
         .connectTimeout(60, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
         .writeTimeout(60, TimeUnit.SECONDS)
+        .callTimeout(60, TimeUnit.SECONDS)
         .build()
 
     private val moshi = Moshi.Builder()
