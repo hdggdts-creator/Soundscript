@@ -14,7 +14,7 @@ import com.example.data.model.ManagementItem
 import com.example.data.model.MedicalLectureNote
 import com.example.data.model.NumberDoseItem
 import com.example.data.model.QuestionAnswerItem
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.firebase.FirebaseApp
@@ -132,14 +132,11 @@ class FirebaseManager(private val context: Context) {
 
         try {
             val clientId = serverClientId ?: WEB_CLIENT_ID
-            val googleIdOption = GetGoogleIdOption.Builder()
-                .setServerClientId(clientId)
-                .setAutoSelectEnabled(false)
-                .setFilterByAuthorizedAccounts(false)
+            val signInOption = GetSignInWithGoogleOption.Builder(clientId)
                 .build()
 
             val request = GetCredentialRequest.Builder()
-                .addCredentialOption(googleIdOption)
+                .addCredentialOption(signInOption)
                 .build()
 
             val result = credentialManager.getCredential(

@@ -69,7 +69,7 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.lifecycleScope
 import com.example.ui.theme.SoundScriptTheme
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.firebase.auth.FirebaseAuth
@@ -168,16 +168,13 @@ class LoginActivity : ComponentActivity() {
      */
     suspend fun signInWithGoogle(): Boolean {
         return try {
-            // 2. Configure a GetGoogleIdOption (with setFilterByAuthorizedAccounts(false) so new users can create an account)
-            val googleIdOption = GetGoogleIdOption.Builder()
-                .setServerClientId(WEB_CLIENT_ID)
-                .setAutoSelectEnabled(false)
-                .setFilterByAuthorizedAccounts(false)
+            // 2. Configure GetSignInWithGoogleOption for explicit 'Sign in with Google' flow
+            val signInOption = GetSignInWithGoogleOption.Builder(WEB_CLIENT_ID)
                 .build()
 
             // Configure a GetCredentialRequest
             val request = GetCredentialRequest.Builder()
-                .addCredentialOption(googleIdOption)
+                .addCredentialOption(signInOption)
                 .build()
 
             // 3. Launch credentialManager.getCredential()

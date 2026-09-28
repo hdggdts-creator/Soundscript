@@ -144,24 +144,20 @@ class ExampleRobolectricTest {
     }
 
     @Test
-    fun testLoginActivityWebClientIdAndGoogleIdOption() {
+    fun testLoginActivityWebClientIdAndSignInWithGoogleOption() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val activityController = org.robolectric.Robolectric.buildActivity(LoginActivity::class.java)
         val activity = activityController.get()
         assertNotNull(activity.WEB_CLIENT_ID)
         assertTrue(activity.WEB_CLIENT_ID.isNotEmpty())
 
-        val googleIdOption = com.google.android.libraries.identity.googleid.GetGoogleIdOption.Builder()
-            .setServerClientId(activity.WEB_CLIENT_ID)
-            .setAutoSelectEnabled(false)
-            .setFilterByAuthorizedAccounts(false)
+        val signInOption = com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption.Builder(activity.WEB_CLIENT_ID)
             .build()
 
-        assertEquals(activity.WEB_CLIENT_ID, googleIdOption.serverClientId)
-        assertEquals(false, googleIdOption.autoSelectEnabled)
+        assertEquals(activity.WEB_CLIENT_ID, signInOption.serverClientId)
 
         val request = androidx.credentials.GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
+            .addCredentialOption(signInOption)
             .build()
         assertEquals(1, request.credentialOptions.size)
     }
