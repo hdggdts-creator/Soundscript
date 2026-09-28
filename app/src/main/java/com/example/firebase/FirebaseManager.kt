@@ -16,6 +16,7 @@ import com.example.data.model.NumberDoseItem
 import com.example.data.model.QuestionAnswerItem
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -115,6 +116,10 @@ class FirebaseManager(private val context: Context) {
         _authError.value = null
     }
 
+    companion object {
+        const val WEB_CLIENT_ID = "YOUR_WEB_CLIENT_ID.apps.googleusercontent.com"
+    }
+
     /**
      * Google Sign-in with Android Credential Manager
      */
@@ -126,7 +131,7 @@ class FirebaseManager(private val context: Context) {
         _authError.value = null
 
         try {
-            val clientId = serverClientId ?: "108347895281-dummywebclientid.apps.googleusercontent.com"
+            val clientId = serverClientId ?: WEB_CLIENT_ID
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
                 .setServerClientId(clientId)
@@ -172,6 +177,12 @@ class FirebaseManager(private val context: Context) {
             _authLoading.value = false
             Log.e("FirebaseManager", "Google sign-in credential exception", e)
             val message = e.message ?: "Google sign-in was cancelled or failed."
+            _authError.value = message
+            Result.failure(e)
+        } catch (e: GoogleIdTokenParsingException) {
+            _authLoading.value = false
+            Log.e("FirebaseManager", "Google ID token parsing exception", e)
+            val message = "Failed to parse Google ID Token: ${e.message}"
             _authError.value = message
             Result.failure(e)
         } catch (e: Exception) {

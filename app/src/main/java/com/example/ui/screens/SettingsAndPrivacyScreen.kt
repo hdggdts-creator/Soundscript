@@ -22,13 +22,16 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.CloudSync
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.MedicalServices
-import androidx.compose.material.icons.filled.Payment
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.SettingsBrightness
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Warning
@@ -37,11 +40,18 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -62,7 +72,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.firebase.UserProfile
 import com.example.ui.SoundScriptViewModel
+import com.example.ui.theme.ThemeManager
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsAndPrivacyScreen(
     viewModel: SoundScriptViewModel,
@@ -418,56 +430,124 @@ fun SettingsAndPrivacyScreen(
             }
         }
 
-        // --- 3. QUOTA & BILLING CLARIFICATION (MANDATORY HANDOFF REQUIREMENT) ---
+        // --- 3. THEME TOGGLE & DISPLAY MODE ---
         Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("theme_settings_card"),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             shape = RoundedCornerShape(16.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.Payment,
-                        contentDescription = "Billing Info",
-                        tint = MaterialTheme.colorScheme.secondary,
+                        imageVector = Icons.Default.Palette,
+                        contentDescription = "Theme Settings",
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "AI Studio Plan vs. Gemini API Billing",
+                        text = "App Theme & Display Mode",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                 }
 
                 Text(
-                    text = "A Google AI consumer subscription's extra quota applies exclusively to supported Google AI Studio web interfaces (such as the Playground and Build web views).",
+                    text = "Select between Light Mode, Dark Mode, or match your device's System Default. Your preference is persisted via SharedPreferences and applied immediately.",
                     style = MaterialTheme.typography.bodySmall,
-                    lineHeight = 19.sp
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                Surface(
-                    color = MaterialTheme.colorScheme.surface,
-                    shape = RoundedCornerShape(8.dp)
+                var themeDropdownExpanded by remember { mutableStateOf(false) }
+                val currentThemeMode by ThemeManager.currentTheme.collectAsState()
+
+                ExposedDropdownMenuBox(
+                    expanded = themeDropdownExpanded,
+                    onExpandedChange = { themeDropdownExpanded = !themeDropdownExpanded },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(
-                            text = "Important Distinction:",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = "• An application making direct Gemini API requests via API key is managed independently and relies on Google Cloud API-tier quotas/billing.",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                        Text(
-                            text = "• A consumer subscription does NOT automatically turn into deployed API application credits. Check Google Cloud billing console for your production key limits.",
-                            style = MaterialTheme.typography.bodySmall
+                    OutlinedTextField(
+                        value = currentThemeMode,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Display Theme") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = when (currentThemeMode) {
+                                    ThemeManager.MODE_LIGHT -> Icons.Default.LightMode
+                                    ThemeManager.MODE_DARK -> Icons.Default.DarkMode
+                                    else -> Icons.Default.SettingsBrightness
+                                },
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = themeDropdownExpanded) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
+                            .testTag("theme_selector_dropdown"),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = themeDropdownExpanded,
+                        onDismissRequest = { themeDropdownExpanded = false }
+                    ) {
+                        ThemeManager.THEME_OPTIONS.forEach { option ->
+                            DropdownMenuItem(
+                                text = { Text(option) },
+                                onClick = {
+                                    ThemeManager.setThemePreference(context, option)
+                                    themeDropdownExpanded = false
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = when (option) {
+                                            ThemeManager.MODE_LIGHT -> Icons.Default.LightMode
+                                            ThemeManager.MODE_DARK -> Icons.Default.DarkMode
+                                            else -> Icons.Default.SettingsBrightness
+                                        },
+                                        contentDescription = null
+                                    )
+                                },
+                                modifier = Modifier.testTag("theme_option_${option.replace(" ", "_")}")
+                            )
+                        }
+                    }
+                }
+
+                // Quick selector chips for one-tap switching
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ThemeManager.THEME_OPTIONS.forEach { option ->
+                        FilterChip(
+                            selected = currentThemeMode == option,
+                            onClick = { ThemeManager.setThemePreference(context, option) },
+                            label = { Text(option, fontSize = 11.sp) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = when (option) {
+                                        ThemeManager.MODE_LIGHT -> Icons.Default.LightMode
+                                        ThemeManager.MODE_DARK -> Icons.Default.DarkMode
+                                        else -> Icons.Default.SettingsBrightness
+                                    },
+                                    contentDescription = null,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
+                            ),
+                            modifier = Modifier.testTag("theme_chip_${option.replace(" ", "_")}")
                         )
                     }
                 }

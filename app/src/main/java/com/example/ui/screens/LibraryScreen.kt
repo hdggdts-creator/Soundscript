@@ -70,7 +70,10 @@ fun LibraryScreen(
     var onlyBookmarked by remember { mutableStateOf(false) }
     var noteToDelete by remember { mutableStateOf<MedicalLectureNote?>(null) }
 
-    val specialties = listOf("All", "Cardiology", "Neurology", "Pharmacology", "Emergency Medicine", "General Medicine")
+    val specialties = listOf(
+        "All", "Internal Medicine", "Pediatrics", "Surgery",
+        "Cardiology", "Neurology", "Pharmacology", "Emergency Medicine", "General Medicine"
+    )
 
     val filteredNotes = allNotes.filter { note ->
         val matchesSearch = searchQuery.isBlank() ||

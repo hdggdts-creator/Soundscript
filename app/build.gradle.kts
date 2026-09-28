@@ -77,6 +77,7 @@ googleServices { missingGoogleServicesStrategy = MissingGoogleServicesStrategy.W
 dependencies {
   implementation(platform(libs.androidx.compose.bom))
   implementation(platform(libs.firebase.bom))
+  implementation(libs.androidx.appcompat)
   // implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
   // implementation(libs.androidx.camera.camera2)
@@ -103,6 +104,10 @@ dependencies {
   // Firestore & Auth dependencies:
   implementation(libs.firebase.firestore)
   implementation(libs.firebase.auth)
+  // Modern Android Credential Manager & Google ID for 'Sign in with Google':
+  // androidx.credentials:credentials
+  // androidx.credentials:credentials-play-services-auth
+  // com.google.android.libraries.identity.googleid:googleid
   implementation(libs.androidx.credentials)
   implementation(libs.androidx.credentials.play.services)
   implementation(libs.googleid)

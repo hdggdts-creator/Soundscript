@@ -8,6 +8,8 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
@@ -51,7 +53,11 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun SoundScriptTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = when (ThemeManager.currentTheme.collectAsState().value) {
+        ThemeManager.MODE_LIGHT -> false
+        ThemeManager.MODE_DARK -> true
+        else -> isSystemInDarkTheme()
+    },
     dynamicColor: Boolean = false, // Use our medical brand scheme consistently
     content: @Composable () -> Unit
 ) {

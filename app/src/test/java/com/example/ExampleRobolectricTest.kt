@@ -142,4 +142,99 @@ class ExampleRobolectricTest {
         assertEquals("student@med.edu", profile.email)
         assertEquals("Dr. Student", profile.displayName)
     }
+
+    @Test
+    fun testLoginActivityWebClientIdAndGoogleIdOption() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val activityController = org.robolectric.Robolectric.buildActivity(LoginActivity::class.java)
+        val activity = activityController.get()
+        assertNotNull(activity.WEB_CLIENT_ID)
+        assertTrue(activity.WEB_CLIENT_ID.isNotEmpty())
+
+        val googleIdOption = com.google.android.libraries.identity.googleid.GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(activity.WEB_CLIENT_ID)
+            .setAutoSelectEnabled(false)
+            .build()
+
+        assertEquals(activity.WEB_CLIENT_ID, googleIdOption.serverClientId)
+        assertEquals(false, googleIdOption.autoSelectEnabled)
+
+        val request = androidx.credentials.GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
+        assertEquals(1, request.credentialOptions.size)
+    }
+
+    @Test
+    fun testFirebaseManagerWebClientIdPlaceholder() {
+        assertNotNull(com.example.firebase.FirebaseManager.WEB_CLIENT_ID)
+        assertTrue(com.example.firebase.FirebaseManager.WEB_CLIENT_ID.contains("apps.googleusercontent.com"))
+    }
+
+    @Test
+    fun testAccessManagerUrls() {
+        assertEquals(
+            "https://gist.githubusercontent.com/hdggdts-creator/raw/subscribers.json",
+            AccessManager.SUBSCRIBERS_URL
+        )
+        assertEquals(
+            "https://t.me/MMF5C3",
+            AccessManager.TELEGRAM_CONTACT_URL
+        )
+    }
+
+    @Test
+    fun testAccessManagerParseSubscribersJson() {
+        val jsonArray = """["doctor@hospital.org", "student@med.edu", "hdggdts@gmail.com"]"""
+        val subscribers = AccessManager.parseSubscribersJson(jsonArray)
+        assertEquals(3, subscribers.size)
+        assertTrue(subscribers.contains("doctor@hospital.org"))
+        assertTrue(subscribers.contains("student@med.edu"))
+        assertTrue(subscribers.contains("hdggdts@gmail.com"))
+
+        // Test case insensitivity and whitespace tolerance in membership checking
+        val testEmail = "  STUDENT@med.edu "
+        val isAllowed = subscribers.any { it.trim().equals(testEmail.trim(), ignoreCase = true) }
+        assertTrue(isAllowed)
+
+        val blockedEmail = "unauthorized@unknown.com"
+        val isBlocked = subscribers.none { it.trim().equals(blockedEmail.trim(), ignoreCase = true) }
+        assertTrue(isBlocked)
+    }
+
+    @Test
+    fun testAccessManagerParseObjectJson() {
+        val jsonObjectArray = """[{"email": "clinician@clinic.com"}, {"email": "surgeon@health.org"}]"""
+        val subscribers = AccessManager.parseSubscribersJson(jsonObjectArray)
+        assertEquals(2, subscribers.size)
+        assertTrue(subscribers.contains("clinician@clinic.com"))
+        assertTrue(subscribers.contains("surgeon@health.org"))
+    }
+
+    @Test
+    fun testThemeManagerPreferencesAndNightMode() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+
+        // Default should be System Default
+        val initialTheme = com.example.ui.theme.ThemeManager.getThemePreference(context)
+        assertEquals(com.example.ui.theme.ThemeManager.MODE_SYSTEM, initialTheme)
+
+        // Switch to Dark Mode
+        com.example.ui.theme.ThemeManager.setThemePreference(context, com.example.ui.theme.ThemeManager.MODE_DARK)
+        assertEquals(com.example.ui.theme.ThemeManager.MODE_DARK, com.example.ui.theme.ThemeManager.getThemePreference(context))
+        assertEquals(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES, androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode())
+
+        // Switch to Light Mode
+        com.example.ui.theme.ThemeManager.setThemePreference(context, com.example.ui.theme.ThemeManager.MODE_LIGHT)
+        assertEquals(com.example.ui.theme.ThemeManager.MODE_LIGHT, com.example.ui.theme.ThemeManager.getThemePreference(context))
+        assertEquals(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO, androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode())
+
+        // Switch to System Default
+        com.example.ui.theme.ThemeManager.setThemePreference(context, com.example.ui.theme.ThemeManager.MODE_SYSTEM)
+        assertEquals(com.example.ui.theme.ThemeManager.MODE_SYSTEM, com.example.ui.theme.ThemeManager.getThemePreference(context))
+        assertEquals(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode())
+    }
 }
+
+

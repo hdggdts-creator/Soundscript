@@ -15,6 +15,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,6 +57,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -89,7 +91,9 @@ fun RecordAndInputScreen(
     val context = LocalContext.current
     var inputMode by remember { mutableIntStateOf(0) } // 0 = Record, 1 = Audio File, 2 = Text / Transcript
     var lectureTitle by remember { mutableStateOf("") }
-    var selectedSpecialty by remember { mutableStateOf("Cardiology") }
+    var selectedSpecialty by remember { mutableStateOf("Internal Medicine") }
+    var isCustomSpecialty by remember { mutableStateOf(false) }
+    var customSpecialtyText by remember { mutableStateOf("") }
     var transcriptText by remember { mutableStateOf("") }
 
     val isRecording by viewModel.recorderManager.isRecording.collectAsState()
@@ -104,10 +108,17 @@ fun RecordAndInputScreen(
     val isProcessing by viewModel.isProcessing.collectAsState()
     val processingStatus by viewModel.processingStatus.collectAsState()
 
-    val specialties = listOf(
-        "Cardiology", "Neurology", "Pharmacology", "Pulmonology",
-        "Gastroenterology", "Infectious Disease", "Nephrology", "Emergency Medicine"
+    val defaultSpecialties = listOf(
+        "Internal Medicine", "Pediatrics", "Surgery", "Cardiology",
+        "Neurology", "Pharmacology", "Pulmonology", "Emergency Medicine",
+        "Gastroenterology", "Infectious Disease", "Nephrology"
     )
+
+    val effectiveSpecialty = if (isCustomSpecialty && customSpecialtyText.isNotBlank()) {
+        customSpecialtyText.trim()
+    } else {
+        selectedSpecialty
+    }
 
     // Permission launcher for microphone
     var hasRecordPermission by remember {
@@ -549,27 +560,67 @@ fun RecordAndInputScreen(
                     shape = RoundedCornerShape(10.dp)
                 )
 
-                Text(
-                    text = "Specialty Area:",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
+                // Specialty Area Header & Custom Toggle
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    specialties.take(3).forEach { spec ->
-                        FilterChip(
-                            selected = selectedSpecialty == spec,
-                            onClick = { selectedSpecialty = spec },
-                            label = { Text(spec, fontSize = 12.sp) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
-                            )
+                    Text(
+                        text = "Specialty Area:",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.testTag("custom_specialty_toggle_row")
+                    ) {
+                        Text(
+                            text = "Custom",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = if (isCustomSpecialty) FontWeight.Bold else FontWeight.Normal,
+                            color = if (isCustomSpecialty) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Switch(
+                            checked = isCustomSpecialty,
+                            onCheckedChange = { isCustomSpecialty = it },
+                            modifier = Modifier.testTag("custom_specialty_switch")
+                        )
+                    }
+                }
+
+                if (isCustomSpecialty) {
+                    OutlinedTextField(
+                        value = customSpecialtyText,
+                        onValueChange = { customSpecialtyText = it },
+                        label = { Text("Enter Custom Specialty") },
+                        placeholder = { Text("e.g. Dermatology, Oncology, Pathology...") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("custom_specialty_input"),
+                        shape = RoundedCornerShape(10.dp),
+                        singleLine = true
+                    )
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                            .padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        defaultSpecialties.forEach { spec ->
+                            FilterChip(
+                                selected = selectedSpecialty == spec,
+                                onClick = { selectedSpecialty = spec },
+                                label = { Text(spec, fontSize = 12.sp) },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
+                                ),
+                                modifier = Modifier.testTag("specialty_chip_${spec.replace(" ", "_")}")
+                            )
+                        }
                     }
                 }
             }
@@ -582,12 +633,12 @@ fun RecordAndInputScreen(
                     viewModel.generateFromText(
                         transcriptOrNotes = transcriptText,
                         titleHint = lectureTitle,
-                        specialtyHint = selectedSpecialty
+                        specialtyHint = effectiveSpecialty
                     )
                 } else {
                     viewModel.generateFromCurrentAudio(
                         titleHint = lectureTitle,
-                        specialtyHint = selectedSpecialty
+                        specialtyHint = effectiveSpecialty
                     )
                 }
             },
