@@ -51,6 +51,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -101,10 +102,10 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val navItems = listOf(
-                    NavItem("Record", Icons.Default.Mic, "nav_record"),
-                    NavItem("Study Notes", Icons.Default.MenuBook, "nav_study_notes"),
-                    NavItem("Library", Icons.Default.Folder, "nav_library"),
-                    NavItem("Settings", Icons.Default.Settings, "nav_settings")
+                    NavItem(stringResource(R.string.nav_record), Icons.Default.Mic, "nav_record"),
+                    NavItem(stringResource(R.string.nav_study_notes), Icons.Default.MenuBook, "nav_study_notes"),
+                    NavItem(stringResource(R.string.nav_library), Icons.Default.Folder, "nav_library"),
+                    NavItem(stringResource(R.string.nav_settings), Icons.Default.Settings, "nav_settings")
                 )
 
                 Row(modifier = Modifier.fillMaxSize()) {
@@ -167,7 +168,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                         Spacer(modifier = Modifier.width(10.dp))
                                         Text(
-                                            text = "SoundScript",
+                                            text = stringResource(R.string.app_name),
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 20.sp,
                                             letterSpacing = 0.5.sp
@@ -178,7 +179,7 @@ class MainActivity : ComponentActivity() {
                                             shape = CircleShape
                                         ) {
                                             Text(
-                                                text = "MED",
+                                                text = stringResource(R.string.app_badge_med),
                                                 style = MaterialTheme.typography.labelSmall,
                                                 fontWeight = FontWeight.ExtraBold,
                                                 color = MaterialTheme.colorScheme.onPrimaryContainer,

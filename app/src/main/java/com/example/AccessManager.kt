@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
  */
 object AccessManager {
 
-    const val SUBSCRIBERS_URL = "https://gist.githubusercontent.com/hdggdts-creator/raw/subscribers.json"
+    const val SUBSCRIBERS_URL = "https://gist.githubusercontent.com/hdggdts-creator/600c9a3eb7051025dd8510f079c1a1ca/raw/subscribers.json"
     const val TELEGRAM_CONTACT_URL = "https://t.me/MMF5C3"
 
     private val httpClient: OkHttpClient by lazy {

@@ -75,11 +75,13 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.example.R
 import com.example.data.sample.SampleLectures
 import com.example.ui.SoundScriptViewModel
 
@@ -174,7 +176,7 @@ fun RecordAndInputScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.GraphicEq,
-                        contentDescription = "SoundScript Icon",
+                        contentDescription = stringResource(R.string.login_logo_desc),
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(28.dp)
                     )
@@ -182,13 +184,13 @@ fun RecordAndInputScreen(
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text(
-                        text = "SoundScript Medical Scribe",
+                        text = stringResource(R.string.app_hero_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Text(
-                        text = "Record or import lectures for structured English revision notes with exact doses.",
+                        text = stringResource(R.string.app_hero_subtitle),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                     )
@@ -215,13 +217,13 @@ fun RecordAndInputScreen(
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
                         Text(
-                            text = "Synthesizing Medical Revision Notes",
+                            text = stringResource(R.string.record_processing_title),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                         Text(
-                            text = processingStatus.ifEmpty { "Transcribing audio and extracting clinical pearls..." },
+                            text = processingStatus.ifEmpty { stringResource(R.string.record_processing_default_status) },
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
                         )
@@ -240,20 +242,20 @@ fun RecordAndInputScreen(
             Tab(
                 selected = inputMode == 0,
                 onClick = { inputMode = 0 },
-                text = { Text("Record Live") },
-                icon = { Icon(Icons.Default.Mic, contentDescription = "Record") }
+                text = { Text(stringResource(R.string.tab_record_live)) },
+                icon = { Icon(Icons.Default.Mic, contentDescription = stringResource(R.string.tab_record_live)) }
             )
             Tab(
                 selected = inputMode == 1,
                 onClick = { inputMode = 1 },
-                text = { Text("Audio File") },
-                icon = { Icon(Icons.Default.AudioFile, contentDescription = "Audio File") }
+                text = { Text(stringResource(R.string.tab_audio_file)) },
+                icon = { Icon(Icons.Default.AudioFile, contentDescription = stringResource(R.string.tab_audio_file)) }
             )
             Tab(
                 selected = inputMode == 2,
                 onClick = { inputMode = 2 },
-                text = { Text("Text / Notes") },
-                icon = { Icon(Icons.Default.TextFields, contentDescription = "Text") }
+                text = { Text(stringResource(R.string.tab_text_notes)) },
+                icon = { Icon(Icons.Default.TextFields, contentDescription = stringResource(R.string.tab_text_notes)) }
             )
         }
 
@@ -278,11 +280,11 @@ fun RecordAndInputScreen(
 
                     Text(
                         text = if (isRecording) {
-                            if (isPaused) "Recording Paused" else "Listening to Medical Lecture..."
+                            if (isPaused) stringResource(R.string.record_status_paused) else stringResource(R.string.record_status_listening)
                         } else if (recordedFile != null) {
-                            "Audio Recorded (${timeFormatted})"
+                            stringResource(R.string.record_status_recorded, timeFormatted)
                         } else {
-                            "Ready to Record Lecture"
+                            stringResource(R.string.record_status_ready)
                         },
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
@@ -336,7 +338,7 @@ fun RecordAndInputScreen(
                         ) {
                             Icon(
                                 imageVector = if (isRecording) Icons.Default.Stop else Icons.Default.Mic,
-                                contentDescription = if (isRecording) "Stop Recording" else "Start Recording",
+                                contentDescription = if (isRecording) stringResource(R.string.record_btn_stop) else stringResource(R.string.record_btn_start),
                                 tint = Color.White,
                                 modifier = Modifier.size(36.dp)
                             )
@@ -382,18 +384,18 @@ fun RecordAndInputScreen(
                             ) {
                                 Icon(
                                     imageVector = if (isPaused) Icons.Default.PlayArrow else Icons.Default.Pause,
-                                    contentDescription = if (isPaused) "Resume" else "Pause"
+                                    contentDescription = if (isPaused) stringResource(R.string.record_btn_resume) else stringResource(R.string.record_btn_pause)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text(if (isPaused) "Resume" else "Pause")
+                                Text(if (isPaused) stringResource(R.string.record_btn_resume) else stringResource(R.string.record_btn_pause))
                             }
                             Button(
                                 onClick = { viewModel.stopRecording() },
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                             ) {
-                                Icon(Icons.Default.Stop, contentDescription = "Done Recording")
+                                Icon(Icons.Default.Stop, contentDescription = stringResource(R.string.record_btn_finish))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Finish Recording")
+                                Text(stringResource(R.string.record_btn_finish))
                             }
                         }
                     }
@@ -409,13 +411,13 @@ fun RecordAndInputScreen(
                             ) {
                                 Icon(
                                     Icons.Default.CheckCircle,
-                                    contentDescription = "Recorded",
+                                    contentDescription = null,
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
-                                    text = "Audio ready for analysis (${recordedFile?.length()?.div(1024)} KB)",
+                                    text = stringResource(R.string.record_audio_ready, (recordedFile?.length()?.div(1024) ?: 0L)),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
@@ -424,7 +426,7 @@ fun RecordAndInputScreen(
                                     onClick = { viewModel.clearAudioSelection() },
                                     modifier = Modifier.size(24.dp)
                                 ) {
-                                    Icon(Icons.Default.Close, contentDescription = "Remove", modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Default.Close, contentDescription = stringResource(R.string.record_audio_remove), modifier = Modifier.size(16.dp))
                                 }
                             }
                         }
@@ -450,20 +452,20 @@ fun RecordAndInputScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.FolderOpen,
-                        contentDescription = "Pick File",
+                        contentDescription = stringResource(R.string.record_pick_title),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(48.dp)
                     )
 
                     Text(
-                        text = if (pickedFileName != null) "Selected: $pickedFileName" else "Select Lecture Audio File",
+                        text = if (pickedFileName != null) stringResource(R.string.record_pick_selected, pickedFileName ?: "") else stringResource(R.string.record_pick_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center
                     )
 
                     Text(
-                        text = "Supports MP3, M4A, WAV, AAC, and OGG formats up to 25 MB directly or multi-clip chunking.",
+                        text = stringResource(R.string.record_pick_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
@@ -475,7 +477,7 @@ fun RecordAndInputScreen(
                     ) {
                         Icon(Icons.Default.AudioFile, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(if (pickedFileName != null) "Change Audio File" else "Browse Audio Files")
+                        Text(if (pickedFileName != null) stringResource(R.string.record_btn_change) else stringResource(R.string.record_btn_browse))
                     }
 
                     if (pickedFileName != null) {
@@ -510,12 +512,12 @@ fun RecordAndInputScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "Paste Lecture Transcript or Notes",
+                        text = stringResource(R.string.record_transcript_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "Have pre-recorded lecture notes, speech transcripts, or slide transcriptions? Paste them here to convert them into structured revision cards.",
+                        text = stringResource(R.string.record_transcript_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -526,7 +528,7 @@ fun RecordAndInputScreen(
                             .fillMaxWidth()
                             .height(180.dp)
                             .testTag("transcript_input"),
-                        placeholder = { Text("Paste medical transcript here... e.g. 'Today we are discussing heart failure classification and the 4 pillars of GDMT. LVEF under 40% defines HFrEF...'") },
+                        placeholder = { Text(stringResource(R.string.record_transcript_placeholder)) },
                         shape = RoundedCornerShape(12.dp)
                     )
                 }
@@ -545,7 +547,7 @@ fun RecordAndInputScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Lecture Details (Optional Hints)",
+                    text = stringResource(R.string.record_lecture_details_title),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -553,8 +555,8 @@ fun RecordAndInputScreen(
                 OutlinedTextField(
                     value = lectureTitle,
                     onValueChange = { lectureTitle = it },
-                    label = { Text("Lecture Topic / Title") },
-                    placeholder = { Text("e.g. SGLT2 Inhibitors in Heart Failure") },
+                    label = { Text(stringResource(R.string.record_lecture_topic_label)) },
+                    placeholder = { Text(stringResource(R.string.record_lecture_topic_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     shape = RoundedCornerShape(10.dp)
@@ -567,7 +569,7 @@ fun RecordAndInputScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Specialty Area:",
+                        text = stringResource(R.string.record_specialty_label),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -576,7 +578,7 @@ fun RecordAndInputScreen(
                         modifier = Modifier.testTag("custom_specialty_toggle_row")
                     ) {
                         Text(
-                            text = "Custom",
+                            text = stringResource(R.string.record_specialty_custom),
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = if (isCustomSpecialty) FontWeight.Bold else FontWeight.Normal,
                             color = if (isCustomSpecialty) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
@@ -594,8 +596,8 @@ fun RecordAndInputScreen(
                     OutlinedTextField(
                         value = customSpecialtyText,
                         onValueChange = { customSpecialtyText = it },
-                        label = { Text("Enter Custom Specialty") },
-                        placeholder = { Text("e.g. Dermatology, Oncology, Pathology...") },
+                        label = { Text(stringResource(R.string.record_specialty_custom_label)) },
+                        placeholder = { Text(stringResource(R.string.record_specialty_custom_placeholder)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .testTag("custom_specialty_input"),
@@ -656,7 +658,7 @@ fun RecordAndInputScreen(
             Icon(Icons.Default.AutoAwesome, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = if (isProcessing) "Generating Study Notes..." else "Generate Structured Revision Notes",
+                text = if (isProcessing) stringResource(R.string.record_btn_generating) else stringResource(R.string.record_btn_generate),
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp
             )
@@ -675,19 +677,19 @@ fun RecordAndInputScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.Science,
-                        contentDescription = "Sample",
+                        contentDescription = stringResource(R.string.record_sample_load_desc),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Or Test Instantly with Clinical Samples:",
+                        text = stringResource(R.string.record_samples_title),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold
                     )
                 }
                 Text(
-                    text = "Tap a sample below to instantly load and review clinical notes, flashcards, exact doses, and PDF export:",
+                    text = stringResource(R.string.record_samples_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -715,14 +717,14 @@ fun RecordAndInputScreen(
                                     fontWeight = FontWeight.SemiBold
                                 )
                                 Text(
-                                    text = "${sample.specialty} • ${sample.numbersAndDoses.size} exact doses • ${sample.questionAnswers.size} Q&As",
+                                    text = stringResource(R.string.record_sample_meta, sample.specialty, sample.numbersAndDoses.size, sample.questionAnswers.size),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.primary
                                 )
                             }
                             Icon(
                                 imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "Load Sample",
+                                contentDescription = stringResource(R.string.record_sample_load_desc),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }

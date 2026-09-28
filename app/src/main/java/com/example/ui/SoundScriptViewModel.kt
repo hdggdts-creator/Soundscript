@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.R
 import com.example.ai.GeminiMedicalService
 import com.example.audio.AudioPlayerManager
 import com.example.audio.AudioRecorderManager
@@ -219,20 +220,21 @@ class SoundScriptViewModel(application: Application) : AndroidViewModel(applicat
         specialtyHint: String
     ) {
         viewModelScope.launch {
+            val app = getApplication<Application>()
             val audioFile = _recordedAudioFile.value ?: copyUriToCacheFile(_pickedAudioUri.value)
             if (audioFile == null || !audioFile.exists()) {
-                _errorMessage.value = "No recorded or selected audio file found."
+                _errorMessage.value = app.getString(R.string.msg_no_audio_file)
                 return@launch
             }
 
             _isProcessing.value = true
-            _processingStatus.value = "Uploading audio & initializing medical model..."
+            _processingStatus.value = app.getString(R.string.msg_status_uploading)
 
             val result = geminiService.generateNotesFromAudio(audioFile, titleHint, specialtyHint)
 
             result.fold(
                 onSuccess = { generatedNote ->
-                    _processingStatus.value = "Saving structured clinical notes..."
+                    _processingStatus.value = app.getString(R.string.msg_status_saving_clinical)
                     val noteWithAudio = generatedNote.copy(
                         audioFilePath = audioFile.absolutePath,
                         audioDurationSeconds = if (generatedNote.audioDurationSeconds > 0) generatedNote.audioDurationSeconds else 300
@@ -240,7 +242,7 @@ class SoundScriptViewModel(application: Application) : AndroidViewModel(applicat
                     val id = repository.saveNote(noteWithAudio)
                     val saved = noteWithAudio.copy(id = id)
                     _currentNote.value = saved
-                    _successMessage.value = "Lecture successfully transcribed into structured revision notes!"
+                    _successMessage.value = app.getString(R.string.msg_lecture_transcribed_success)
                     _isProcessing.value = false
                     _selectedTab.value = 1
                     
@@ -252,7 +254,7 @@ class SoundScriptViewModel(application: Application) : AndroidViewModel(applicat
                 onFailure = { error ->
                     Log.e("SoundScriptViewModel", "Audio processing failed", error)
                     _isProcessing.value = false
-                    _errorMessage.value = error.message ?: "Failed to generate notes."
+                    _errorMessage.value = error.message ?: app.getString(R.string.msg_failed_generate)
                 }
             )
         }
@@ -263,24 +265,25 @@ class SoundScriptViewModel(application: Application) : AndroidViewModel(applicat
         titleHint: String,
         specialtyHint: String
     ) {
+        val app = getApplication<Application>()
         if (transcriptOrNotes.isBlank()) {
-            _errorMessage.value = "Please enter or paste lecture text."
+            _errorMessage.value = app.getString(R.string.msg_enter_lecture_text)
             return
         }
 
         viewModelScope.launch {
             _isProcessing.value = true
-            _processingStatus.value = "Analyzing medical lecture text with Gemini..."
+            _processingStatus.value = app.getString(R.string.msg_status_analyzing_text)
 
             val result = geminiService.generateNotesFromText(transcriptOrNotes, titleHint, specialtyHint)
 
             result.fold(
                 onSuccess = { note ->
-                    _processingStatus.value = "Saving structured revision notes..."
+                    _processingStatus.value = app.getString(R.string.msg_status_saving_text)
                     val id = repository.saveNote(note)
                     val saved = note.copy(id = id)
                     _currentNote.value = saved
-                    _successMessage.value = "Lecture notes generated and saved to library!"
+                    _successMessage.value = app.getString(R.string.msg_notes_saved_success)
                     _isProcessing.value = false
                     _selectedTab.value = 1
                     
@@ -292,7 +295,7 @@ class SoundScriptViewModel(application: Application) : AndroidViewModel(applicat
                 onFailure = { error ->
                     Log.e("SoundScriptViewModel", "Text notes generation failed", error)
                     _isProcessing.value = false
-                    _errorMessage.value = error.message ?: "Failed to generate notes."
+                    _errorMessage.value = error.message ?: app.getString(R.string.msg_failed_generate)
                 }
             )
         }
@@ -342,39 +345,41 @@ class SoundScriptViewModel(application: Application) : AndroidViewModel(applicat
             viewModelScope.launch(Dispatchers.IO) {
                 firebaseManager.deleteNoteFromFirestore(noteId)
             }
-            _successMessage.value = "Lecture note removed."
+            _successMessage.value = getApplication<Application>().getString(R.string.msg_note_removed)
         }
     }
 
     fun signInWithGoogle(activityContext: Context, serverClientId: String? = null) {
         viewModelScope.launch {
+            val app = getApplication<Application>()
             val result = firebaseManager.signInWithGoogle(activityContext, serverClientId)
             result.fold(
                 onSuccess = { profile ->
-                    _successMessage.value = "Signed in as ${profile.displayName ?: profile.email}"
+                    _successMessage.value = app.getString(R.string.msg_signed_in_as, profile.displayName ?: profile.email)
                     syncWithFirestore()
                 },
                 onFailure = { error ->
-                    _errorMessage.value = error.message ?: "Google sign-in failed."
+                    _errorMessage.value = error.message ?: app.getString(R.string.msg_google_signin_failed)
                 }
             )
         }
     }
 
     fun signInWithEmail(email: String, pass: String) {
+        val app = getApplication<Application>()
         if (email.isBlank() || pass.isBlank()) {
-            _errorMessage.value = "Email and password cannot be empty."
+            _errorMessage.value = app.getString(R.string.msg_email_pass_empty)
             return
         }
         viewModelScope.launch {
             val result = firebaseManager.signInWithEmail(email, pass)
             result.fold(
                 onSuccess = { profile ->
-                    _successMessage.value = "Signed in as ${profile.email}"
+                    _successMessage.value = app.getString(R.string.msg_signed_in_as, profile.email)
                     syncWithFirestore()
                 },
                 onFailure = { error ->
-                    _errorMessage.value = error.message ?: "Authentication failed."
+                    _errorMessage.value = error.message ?: app.getString(R.string.msg_auth_failed)
                 }
             )
         }
@@ -382,14 +387,15 @@ class SoundScriptViewModel(application: Application) : AndroidViewModel(applicat
 
     fun signInAnonymously() {
         viewModelScope.launch {
+            val app = getApplication<Application>()
             val result = firebaseManager.signInAnonymously()
             result.fold(
                 onSuccess = {
-                    _successMessage.value = "Signed in as Guest Clinician"
+                    _successMessage.value = app.getString(R.string.msg_signed_in_guest)
                     syncWithFirestore()
                 },
                 onFailure = { error ->
-                    _errorMessage.value = error.message ?: "Guest sign-in failed."
+                    _errorMessage.value = error.message ?: app.getString(R.string.msg_guest_signin_failed)
                 }
             )
         }
@@ -398,7 +404,7 @@ class SoundScriptViewModel(application: Application) : AndroidViewModel(applicat
     fun signOut() {
         viewModelScope.launch {
             firebaseManager.signOut()
-            _successMessage.value = "Signed out successfully."
+            _successMessage.value = getApplication<Application>().getString(R.string.msg_signed_out)
         }
     }
 
@@ -409,23 +415,24 @@ class SoundScriptViewModel(application: Application) : AndroidViewModel(applicat
                 firebaseManager.syncNoteToFirestore(note)
             }
             withContext(Dispatchers.Main) {
-                _successMessage.value = "Synced notes with Cloud Firestore"
+                _successMessage.value = getApplication<Application>().getString(R.string.msg_synced_firestore)
             }
         }
     }
 
     fun exportAndSharePdf(note: MedicalLectureNote) {
         viewModelScope.launch(Dispatchers.IO) {
+            val app = getApplication<Application>()
             try {
                 val pdfFile = pdfGenerator.generatePdf(note)
                 withContext(Dispatchers.Main) {
                     pdfGenerator.sharePdf(pdfFile)
-                    _successMessage.value = "PDF exported: ${pdfFile.name}"
+                    _successMessage.value = app.getString(R.string.msg_pdf_exported, pdfFile.name)
                 }
             } catch (e: Exception) {
                 Log.e("SoundScriptViewModel", "Failed to export PDF", e)
                 withContext(Dispatchers.Main) {
-                    _errorMessage.value = "Failed to export PDF: ${e.message}"
+                    _errorMessage.value = app.getString(R.string.msg_pdf_export_failed, e.message ?: "")
                 }
             }
         }
@@ -434,7 +441,7 @@ class SoundScriptViewModel(application: Application) : AndroidViewModel(applicat
     fun saveCustomApiKey(key: String) {
         val prefs = getApplication<Application>().getSharedPreferences("soundscript_settings", Context.MODE_PRIVATE)
         prefs.edit().putString("custom_gemini_api_key", key.trim()).apply()
-        _successMessage.value = "Gemini API key updated."
+        _successMessage.value = getApplication<Application>().getString(R.string.msg_api_key_updated)
     }
 
     fun getCustomApiKey(): String {

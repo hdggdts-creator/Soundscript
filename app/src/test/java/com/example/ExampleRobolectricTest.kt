@@ -178,7 +178,7 @@ class ExampleRobolectricTest {
     @Test
     fun testAccessManagerUrls() {
         assertEquals(
-            "https://gist.githubusercontent.com/hdggdts-creator/raw/subscribers.json",
+            "https://gist.githubusercontent.com/hdggdts-creator/600c9a3eb7051025dd8510f079c1a1ca/raw/subscribers.json",
             AccessManager.SUBSCRIBERS_URL
         )
         assertEquals(
@@ -237,6 +237,21 @@ class ExampleRobolectricTest {
         com.example.ui.theme.ThemeManager.setThemePreference(context, com.example.ui.theme.ThemeManager.MODE_SYSTEM)
         assertEquals(com.example.ui.theme.ThemeManager.MODE_SYSTEM, com.example.ui.theme.ThemeManager.getThemePreference(context))
         assertEquals(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode())
+    }
+
+    @Test
+    fun testArabicLocalizationStrings() {
+        val baseContext = ApplicationProvider.getApplicationContext<Context>()
+        val config = android.content.res.Configuration(baseContext.resources.configuration)
+        config.setLocale(java.util.Locale("ar"))
+        val localizedContext = baseContext.createConfigurationContext(config)
+
+        assertEquals("تسجيل", localizedContext.getString(R.string.nav_record))
+        assertEquals("تسجيل الدخول باستخدام Google", localizedContext.getString(R.string.login_google_sign_in))
+        assertEquals("تم تقييد الوصول", localizedContext.getString(R.string.access_restricted_title))
+        assertEquals("ملخصات المذاكرة", localizedContext.getString(R.string.nav_study_notes))
+        assertEquals("المكتبة", localizedContext.getString(R.string.nav_library))
+        assertEquals("الإعدادات", localizedContext.getString(R.string.nav_settings))
     }
 }
 

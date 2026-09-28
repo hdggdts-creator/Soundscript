@@ -49,10 +49,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.R
 import com.example.data.model.MedicalLectureNote
 import com.example.ui.SoundScriptViewModel
 import java.text.SimpleDateFormat
@@ -100,12 +102,12 @@ fun LibraryScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag("search_library_input"),
-            placeholder = { Text("Search lectures, diagnoses, drugs...") },
+            placeholder = { Text(stringResource(R.string.library_search_placeholder)) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             trailingIcon = {
                 if (searchQuery.isNotEmpty()) {
                     IconButton(onClick = { viewModel.setSearchQuery("") }) {
-                        Icon(Icons.Default.Clear, contentDescription = "Clear")
+                        Icon(Icons.Default.Clear, contentDescription = stringResource(R.string.library_clear_search_desc))
                     }
                 }
             },
@@ -122,7 +124,7 @@ fun LibraryScreen(
                 FilterChip(
                     selected = onlyBookmarked,
                     onClick = { onlyBookmarked = !onlyBookmarked },
-                    label = { Text("⭐ Bookmarked", fontSize = 12.sp) },
+                    label = { Text(stringResource(R.string.library_filter_bookmarked), fontSize = 12.sp) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
                     )
@@ -147,7 +149,7 @@ fun LibraryScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "${filteredNotes.size} Lecture Notes Saved",
+                text = stringResource(R.string.library_notes_count, filteredNotes.size),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -172,12 +174,12 @@ fun LibraryScreen(
                         modifier = Modifier.size(48.dp)
                     )
                     Text(
-                        text = "No lecture notes found",
+                        text = stringResource(R.string.library_empty_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "Try adjusting your search or record a new lecture.",
+                        text = stringResource(R.string.library_empty_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -207,8 +209,8 @@ fun LibraryScreen(
     if (noteToDelete != null) {
         AlertDialog(
             onDismissRequest = { noteToDelete = null },
-            title = { Text("Delete Lecture Notes?") },
-            text = { Text("Are you sure you want to delete '${noteToDelete?.title}' from your library?") },
+            title = { Text(stringResource(R.string.library_delete_dialog_title)) },
+            text = { Text(stringResource(R.string.library_delete_dialog_msg, noteToDelete?.title ?: "")) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -216,12 +218,12 @@ fun LibraryScreen(
                         noteToDelete = null
                     }
                 ) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.library_delete_btn), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { noteToDelete = null }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.library_cancel_btn))
                 }
             }
         )
@@ -272,7 +274,7 @@ fun LectureLibraryCard(
                     IconButton(onClick = onBookmark, modifier = Modifier.size(32.dp)) {
                         Icon(
                             imageVector = if (note.isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-                            contentDescription = "Bookmark",
+                            contentDescription = stringResource(R.string.study_bookmark_desc),
                             tint = if (note.isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
@@ -280,7 +282,7 @@ fun LectureLibraryCard(
                     IconButton(onClick = onExportPdf, modifier = Modifier.size(32.dp)) {
                         Icon(
                             imageVector = Icons.Default.PictureAsPdf,
-                            contentDescription = "Export PDF",
+                            contentDescription = stringResource(R.string.study_export_pdf_desc),
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
@@ -288,7 +290,7 @@ fun LectureLibraryCard(
                     IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete",
+                            contentDescription = stringResource(R.string.library_delete_desc),
                             tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
                             modifier = Modifier.size(20.dp)
                         )
@@ -333,7 +335,7 @@ fun LectureLibraryCard(
                             shape = RoundedCornerShape(4.dp)
                         ) {
                             Text(
-                                text = "${note.numbersAndDoses.size} exact doses",
+                                text = stringResource(R.string.library_doses_tag, note.numbersAndDoses.size),
                                 style = MaterialTheme.typography.labelSmall,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                             )
@@ -345,7 +347,7 @@ fun LectureLibraryCard(
                             shape = RoundedCornerShape(4.dp)
                         ) {
                             Text(
-                                text = "${note.questionAnswers.size} Q&As",
+                                text = stringResource(R.string.library_qa_tag, note.questionAnswers.size),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)

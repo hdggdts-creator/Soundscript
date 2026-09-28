@@ -65,11 +65,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.R
 import com.example.firebase.UserProfile
 import com.example.ui.SoundScriptViewModel
 import com.example.ui.theme.ThemeManager
@@ -116,13 +118,13 @@ fun SettingsAndPrivacyScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.AccountCircle,
-                        contentDescription = "Account",
+                        contentDescription = stringResource(R.string.settings_account_title),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "User Account & Cloud Sync",
+                        text = stringResource(R.string.settings_account_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -156,12 +158,12 @@ fun SettingsAndPrivacyScreen(
                             Spacer(modifier = Modifier.width(12.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = user.displayName ?: "Authenticated Clinician",
+                                    text = user.displayName ?: stringResource(R.string.settings_account_default_name),
                                     style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = user.email ?: (if (user.isAnonymous) "Guest Account (Local/Cloud Sync)" else "Google Account"),
+                                    text = user.email ?: (if (user.isAnonymous) stringResource(R.string.settings_account_guest_type) else stringResource(R.string.settings_account_google_type)),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -175,7 +177,7 @@ fun SettingsAndPrivacyScreen(
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
-                                        text = "Firestore Cloud Backup Active",
+                                        text = stringResource(R.string.settings_account_backup_active),
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.primary,
                                         fontWeight = FontWeight.SemiBold
@@ -195,7 +197,7 @@ fun SettingsAndPrivacyScreen(
                         ) {
                             Icon(Icons.Default.Sync, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Sync to Cloud")
+                            Text(stringResource(R.string.settings_btn_sync_cloud))
                         }
 
                         Button(
@@ -205,13 +207,13 @@ fun SettingsAndPrivacyScreen(
                         ) {
                             Icon(Icons.Default.Logout, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text("Sign Out")
+                            Text(stringResource(R.string.settings_btn_sign_out))
                         }
                     }
                 } else {
                     // Not signed in state
                     Text(
-                        text = "Sign in to securely identify yourself and synchronize your lecture revision notes to Cloud Firestore.",
+                        text = stringResource(R.string.settings_sign_in_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -239,7 +241,7 @@ fun SettingsAndPrivacyScreen(
                         ) {
                             CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.5.dp)
                             Spacer(modifier = Modifier.width(10.dp))
-                            Text("Authenticating...", style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(R.string.settings_authenticating), style = MaterialTheme.typography.bodyMedium)
                         }
                     } else {
                         // Google Sign-In Primary Button
@@ -264,7 +266,7 @@ fun SettingsAndPrivacyScreen(
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
-                                text = "Sign in with Google",
+                                text = stringResource(R.string.settings_btn_google_sign_in),
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 15.sp
                             )
@@ -281,7 +283,7 @@ fun SettingsAndPrivacyScreen(
                         ) {
                             Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Continue as Guest Clinician")
+                            Text(stringResource(R.string.settings_btn_guest_sign_in))
                         }
 
                         // Toggle Email / Password form
@@ -292,7 +294,7 @@ fun SettingsAndPrivacyScreen(
                         ) {
                             Icon(Icons.Default.Email, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(if (showEmailForm) "Hide Email Sign-in" else "Sign in with Email / Password")
+                            Text(if (showEmailForm) stringResource(R.string.settings_btn_hide_email) else stringResource(R.string.settings_btn_show_email))
                         }
 
                         if (showEmailForm) {
@@ -300,8 +302,8 @@ fun SettingsAndPrivacyScreen(
                                 OutlinedTextField(
                                     value = emailInput,
                                     onValueChange = { emailInput = it },
-                                    label = { Text("Medical Email") },
-                                    placeholder = { Text("doctor@hospital.org") },
+                                    label = { Text(stringResource(R.string.settings_email_label)) },
+                                    placeholder = { Text(stringResource(R.string.settings_email_placeholder)) },
                                     singleLine = true,
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                                     modifier = Modifier.fillMaxWidth().testTag("email_input"),
@@ -311,7 +313,7 @@ fun SettingsAndPrivacyScreen(
                                 OutlinedTextField(
                                     value = passwordInput,
                                     onValueChange = { passwordInput = it },
-                                    label = { Text("Password") },
+                                    label = { Text(stringResource(R.string.settings_password_label)) },
                                     singleLine = true,
                                     visualTransformation = PasswordVisualTransformation(),
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -324,7 +326,7 @@ fun SettingsAndPrivacyScreen(
                                     modifier = Modifier.fillMaxWidth().testTag("email_submit_button"),
                                     shape = RoundedCornerShape(10.dp)
                                 ) {
-                                    Text("Sign In or Register")
+                                    Text(stringResource(R.string.settings_btn_email_submit))
                                 }
                             }
                         }
@@ -349,7 +351,7 @@ fun SettingsAndPrivacyScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Cloud Firestore: ${allNotes.size} lecture revision notes synchronized locally and in cloud storage.",
+                            text = stringResource(R.string.settings_firestore_status, allNotes.size),
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -371,13 +373,13 @@ fun SettingsAndPrivacyScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.Key,
-                        contentDescription = "API Key",
+                        contentDescription = stringResource(R.string.settings_gemini_title),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Gemini API Configuration",
+                        text = stringResource(R.string.settings_gemini_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -401,7 +403,7 @@ fun SettingsAndPrivacyScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (isKeyConfigured) "Gemini API Key is Active & Configured" else "No API Key Detected — Add your key below or via Secrets",
+                            text = if (isKeyConfigured) stringResource(R.string.settings_gemini_key_active) else stringResource(R.string.settings_gemini_key_missing),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Medium,
                             color = if (isKeyConfigured) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onErrorContainer
@@ -412,8 +414,8 @@ fun SettingsAndPrivacyScreen(
                 OutlinedTextField(
                     value = apiKeyInput,
                     onValueChange = { apiKeyInput = it },
-                    label = { Text("Custom Gemini API Key Override") },
-                    placeholder = { Text("AIzaSy...") },
+                    label = { Text(stringResource(R.string.settings_gemini_key_label)) },
+                    placeholder = { Text(stringResource(R.string.settings_gemini_key_placeholder)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("api_key_input"),
@@ -425,7 +427,7 @@ fun SettingsAndPrivacyScreen(
                     onClick = { viewModel.saveCustomApiKey(apiKeyInput) },
                     modifier = Modifier.align(Alignment.End)
                 ) {
-                    Text("Save Key")
+                    Text(stringResource(R.string.settings_gemini_btn_save))
                 }
             }
         }
@@ -446,20 +448,20 @@ fun SettingsAndPrivacyScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.Palette,
-                        contentDescription = "Theme Settings",
+                        contentDescription = stringResource(R.string.settings_theme_title),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "App Theme & Display Mode",
+                        text = stringResource(R.string.settings_theme_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                 }
 
                 Text(
-                    text = "Select between Light Mode, Dark Mode, or match your device's System Default. Your preference is persisted via SharedPreferences and applied immediately.",
+                    text = stringResource(R.string.settings_theme_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -473,10 +475,14 @@ fun SettingsAndPrivacyScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedTextField(
-                        value = currentThemeMode,
+                        value = when (currentThemeMode) {
+                            ThemeManager.MODE_LIGHT -> stringResource(R.string.settings_theme_light)
+                            ThemeManager.MODE_DARK -> stringResource(R.string.settings_theme_dark)
+                            else -> stringResource(R.string.settings_theme_system)
+                        },
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Display Theme") },
+                        label = { Text(stringResource(R.string.settings_theme_display_label)) },
                         leadingIcon = {
                             Icon(
                                 imageVector = when (currentThemeMode) {
@@ -501,8 +507,13 @@ fun SettingsAndPrivacyScreen(
                         onDismissRequest = { themeDropdownExpanded = false }
                     ) {
                         ThemeManager.THEME_OPTIONS.forEach { option ->
+                            val optionLabel = when (option) {
+                                ThemeManager.MODE_LIGHT -> stringResource(R.string.settings_theme_light)
+                                ThemeManager.MODE_DARK -> stringResource(R.string.settings_theme_dark)
+                                else -> stringResource(R.string.settings_theme_system)
+                            }
                             DropdownMenuItem(
-                                text = { Text(option) },
+                                text = { Text(optionLabel) },
                                 onClick = {
                                     ThemeManager.setThemePreference(context, option)
                                     themeDropdownExpanded = false
@@ -529,10 +540,15 @@ fun SettingsAndPrivacyScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     ThemeManager.THEME_OPTIONS.forEach { option ->
+                        val optionLabel = when (option) {
+                            ThemeManager.MODE_LIGHT -> stringResource(R.string.settings_theme_light)
+                            ThemeManager.MODE_DARK -> stringResource(R.string.settings_theme_dark)
+                            else -> stringResource(R.string.settings_theme_system)
+                        }
                         FilterChip(
                             selected = currentThemeMode == option,
                             onClick = { ThemeManager.setThemePreference(context, option) },
-                            label = { Text(option, fontSize = 11.sp) },
+                            label = { Text(optionLabel, fontSize = 11.sp) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = when (option) {
@@ -568,13 +584,13 @@ fun SettingsAndPrivacyScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.Shield,
-                        contentDescription = "Privacy",
+                        contentDescription = stringResource(R.string.settings_privacy_title),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Privacy & Student Security Architecture",
+                        text = stringResource(R.string.settings_privacy_title),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -582,20 +598,20 @@ fun SettingsAndPrivacyScreen(
 
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     PrivacyBullet(
-                        title = "Local SQLite & Cloud Firestore Dual Persistence",
-                        desc = "All notes are cached on device via Room and backed up in real time to your private Cloud Firestore collection."
+                        title = stringResource(R.string.settings_privacy_b1_title),
+                        desc = stringResource(R.string.settings_privacy_b1_desc)
                     )
                     PrivacyBullet(
-                        title = "No Raw Speech Transcript Exposure",
-                        desc = "Raw lecture transcripts are never surfaced or stored as user-facing outputs; the AI model directly synthesizes clean, structured medical study notes."
+                        title = stringResource(R.string.settings_privacy_b2_title),
+                        desc = stringResource(R.string.settings_privacy_b2_desc)
                     )
                     PrivacyBullet(
-                        title = "Direct Secure Gemini REST Pipeline",
-                        desc = "Audio and text prompts are encrypted in transit (TLS 1.3) directly to Google's official Gemini endpoint using your project's configured API key."
+                        title = stringResource(R.string.settings_privacy_b3_title),
+                        desc = stringResource(R.string.settings_privacy_b3_desc)
                     )
                     PrivacyBullet(
-                        title = "Searchable Offline PDF Export",
-                        desc = "Exported PDFs are compiled natively on device using Android's native Graphics PDF engine and saved in your device's private app cache."
+                        title = stringResource(R.string.settings_privacy_b4_title),
+                        desc = stringResource(R.string.settings_privacy_b4_desc)
                     )
                 }
             }
@@ -613,19 +629,19 @@ fun SettingsAndPrivacyScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.MedicalServices,
-                    contentDescription = "Medical",
+                    contentDescription = stringResource(R.string.settings_disclaimer_title),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(22.dp)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Column {
                     Text(
-                        text = "Medical Education Scribe Disclaimer",
+                        text = stringResource(R.string.settings_disclaimer_title),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "SoundScript is designed as an educational revision companion for medical students, residents, and healthcare professionals. Always verify clinical doses, protocols, and institutional guidelines before patient administration.",
+                        text = stringResource(R.string.settings_disclaimer_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         lineHeight = 18.sp

@@ -58,6 +58,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -270,18 +271,18 @@ class LoginActivity : ComponentActivity() {
         lifecycleScope.launch {
             viewModeState.value = LoginViewMode.AccessRestricted(
                 email = email,
-                message = "Re-checking subscription directory...",
+                message = getString(R.string.login_rechecking_subscription),
                 isChecking = true
             )
             when (val result = AccessManager.verifyAccess(email)) {
                 is AccessManager.AccessResult.Granted -> {
-                    Toast.makeText(this@LoginActivity, "Subscription verified! Welcome to SoundScript.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginActivity, getString(R.string.login_toast_subscription_verified), Toast.LENGTH_SHORT).show()
                     navigateToMainScreen()
                 }
                 is AccessManager.AccessResult.Blocked -> {
                     viewModeState.value = LoginViewMode.AccessRestricted(
                         email = email,
-                        message = result.message ?: "Account is still not listed as an active subscriber.",
+                        message = result.message ?: getString(R.string.login_toast_account_not_listed),
                         isChecking = false
                     )
                 }
@@ -305,7 +306,7 @@ class LoginActivity : ComponentActivity() {
             startActivity(intent)
         } catch (e: Exception) {
             Log.e("LoginActivity", "Could not launch Telegram URL", e)
-            Toast.makeText(this, "Could not open Telegram: ${AccessManager.TELEGRAM_CONTACT_URL}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.login_toast_cannot_open_telegram, AccessManager.TELEGRAM_CONTACT_URL), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -374,7 +375,7 @@ fun LoginScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.GraphicEq,
-                            contentDescription = "SoundScript Logo",
+                            contentDescription = stringResource(R.string.login_logo_desc),
                             tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(36.dp)
                         )
@@ -383,7 +384,7 @@ fun LoginScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = "SoundScript",
+                                text = stringResource(R.string.app_name),
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.ExtraBold,
                                 color = MaterialTheme.colorScheme.onSurface
@@ -394,7 +395,7 @@ fun LoginScreen(
                                 shape = CircleShape
                             ) {
                                 Text(
-                                    text = "MED",
+                                    text = stringResource(R.string.app_badge_med),
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -404,7 +405,7 @@ fun LoginScreen(
                         }
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = "Medical Lecture Audio Scribe & High-Yield Revision",
+                            text = stringResource(R.string.app_subtitle),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center
@@ -450,12 +451,12 @@ fun LoginScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Security,
-                                contentDescription = "Google Icon",
+                                contentDescription = stringResource(R.string.login_google_icon_desc),
                                 modifier = Modifier.size(22.dp)
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(
-                                text = "Sign in with Google",
+                                text = stringResource(R.string.login_google_sign_in),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp
@@ -478,7 +479,7 @@ fun LoginScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Continue as Guest Clinician",
+                                text = stringResource(R.string.login_continue_guest),
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -548,7 +549,7 @@ fun AccessRestrictedScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Lock,
-                            contentDescription = "Access Restricted",
+                            contentDescription = stringResource(R.string.access_restricted_lock_icon_desc),
                             tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(40.dp)
                         )
@@ -556,7 +557,7 @@ fun AccessRestrictedScreen(
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Access Restricted",
+                            text = stringResource(R.string.access_restricted_title),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface,
@@ -564,7 +565,7 @@ fun AccessRestrictedScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "SoundScript Medical Subscription Gate",
+                            text = stringResource(R.string.access_restricted_subtitle),
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.error,
                             fontWeight = FontWeight.SemiBold
@@ -591,19 +592,19 @@ fun AccessRestrictedScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Email,
-                                    contentDescription = "Email",
+                                    contentDescription = stringResource(R.string.access_restricted_email_icon_desc),
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Signed-in Account",
+                                    text = stringResource(R.string.access_restricted_signed_in_account),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             Text(
-                                text = signedInEmail.ifBlank { "Unknown Account" },
+                                text = signedInEmail.ifBlank { stringResource(R.string.access_restricted_unknown_account) },
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface,
@@ -615,7 +616,7 @@ fun AccessRestrictedScreen(
                                 shape = RoundedCornerShape(8.dp)
                             ) {
                                 Text(
-                                    text = "Subscription Required",
+                                    text = stringResource(R.string.access_restricted_subscription_required),
                                     color = MaterialTheme.colorScheme.error,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
@@ -647,7 +648,7 @@ fun AccessRestrictedScreen(
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Text(
-                                text = "Checking remote subscriber directory...",
+                                text = stringResource(R.string.access_restricted_checking_directory),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -668,12 +669,12 @@ fun AccessRestrictedScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Refresh,
-                                contentDescription = "Refresh",
+                                contentDescription = stringResource(R.string.access_restricted_refresh_icon_desc),
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
-                                text = "Refresh Access",
+                                text = stringResource(R.string.access_restricted_refresh_access),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -694,12 +695,12 @@ fun AccessRestrictedScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Send,
-                                contentDescription = "Telegram",
+                                contentDescription = stringResource(R.string.access_restricted_telegram_icon_desc),
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
-                                text = "Contact to Subscribe",
+                                text = stringResource(R.string.access_restricted_contact_to_subscribe),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -717,7 +718,7 @@ fun AccessRestrictedScreen(
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "Sign in with a different account",
+                                text = stringResource(R.string.access_restricted_sign_in_different_account),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.secondary
                             )

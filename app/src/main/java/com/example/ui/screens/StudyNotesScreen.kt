@@ -67,10 +67,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.R
 import com.example.data.model.ClassificationItem
 import com.example.data.model.ClinicalPoint
 import com.example.data.model.ExamEmphasisItem
@@ -116,18 +118,18 @@ fun StudyNotesScreen(
                     modifier = Modifier.size(56.dp)
                 )
                 Text(
-                    text = "No Medical Lecture Selected",
+                    text = stringResource(R.string.study_no_lecture_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Record a lecture or choose one from your library to view structured study notes.",
+                    text = stringResource(R.string.study_no_lecture_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
                 Button(onClick = { viewModel.selectTab(0) }) {
-                    Text("Go to Record & Input")
+                    Text(stringResource(R.string.study_btn_go_to_record))
                 }
             }
         }
@@ -180,7 +182,7 @@ fun StudyNotesScreen(
                             ) {
                                 Icon(
                                     imageVector = if (note.isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-                                    contentDescription = "Bookmark",
+                                    contentDescription = stringResource(R.string.study_bookmark_desc),
                                     tint = if (note.isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -189,10 +191,10 @@ fun StudyNotesScreen(
                                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                     val clip = ClipData.newPlainText("SoundScript Notes", "${note.title}\n\nSummary:\n${note.summary}")
                                     clipboard.setPrimaryClip(clip)
-                                    Toast.makeText(context, "Notes copied to clipboard", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.study_toast_copied), Toast.LENGTH_SHORT).show()
                                 }
                             ) {
-                                Icon(Icons.Default.ContentCopy, contentDescription = "Copy")
+                                Icon(Icons.Default.ContentCopy, contentDescription = stringResource(R.string.study_copy_desc))
                             }
                             IconButton(
                                 onClick = { viewModel.exportAndSharePdf(note) },
@@ -200,7 +202,7 @@ fun StudyNotesScreen(
                             ) {
                                 Icon(
                                     Icons.Default.PictureAsPdf,
-                                    contentDescription = "Export PDF",
+                                    contentDescription = stringResource(R.string.study_export_pdf_desc),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
@@ -214,9 +216,9 @@ fun StudyNotesScreen(
                     )
 
                     val dateStr = SimpleDateFormat("MMM dd, yyyy", Locale.US).format(Date(note.createdAt))
-                    val durationMin = if (note.audioDurationSeconds > 0) "${note.audioDurationSeconds / 60}m" else "Direct Note"
+                    val durationMin = if (note.audioDurationSeconds > 0) "${note.audioDurationSeconds / 60}m" else stringResource(R.string.study_direct_note)
                     Text(
-                        text = "$dateStr • Duration: $durationMin • English Revision Notes",
+                        text = stringResource(R.string.study_meta_header, dateStr, durationMin),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -250,14 +252,14 @@ fun StudyNotesScreen(
                                         ) {
                                             Icon(
                                                 imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                                                contentDescription = "Play/Pause Audio",
+                                                contentDescription = stringResource(R.string.study_audio_play_pause_desc),
                                                 tint = Color.White,
                                                 modifier = Modifier.size(20.dp)
                                             )
                                         }
                                         Spacer(modifier = Modifier.width(10.dp))
                                         Text(
-                                            text = if (isPlaying) "Playing Lecture Audio" else "Listen to Original Audio",
+                                            text = if (isPlaying) stringResource(R.string.study_audio_playing) else stringResource(R.string.study_audio_listen),
                                             style = MaterialTheme.typography.bodySmall,
                                             fontWeight = FontWeight.Medium
                                         )
@@ -293,7 +295,7 @@ fun StudyNotesScreen(
                     ) {
                         Icon(Icons.Default.PictureAsPdf, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Export / Share PDF Study Guide", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.study_btn_export_pdf), fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -310,19 +312,19 @@ fun StudyNotesScreen(
                 Tab(
                     selected = studyMode == StudyMode.NOTES,
                     onClick = { viewModel.setStudyMode(StudyMode.NOTES) },
-                    text = { Text("Revision Notes") },
+                    text = { Text(stringResource(R.string.study_tab_notes)) },
                     icon = { Icon(Icons.Default.MenuBook, contentDescription = null) }
                 )
                 Tab(
                     selected = studyMode == StudyMode.FLASHCARDS,
                     onClick = { viewModel.setStudyMode(StudyMode.FLASHCARDS) },
-                    text = { Text("Active Recall (${flashcards.size})") },
+                    text = { Text(stringResource(R.string.study_tab_flashcards, flashcards.size)) },
                     icon = { Icon(Icons.Default.Psychology, contentDescription = null) }
                 )
                 Tab(
                     selected = studyMode == StudyMode.QUIZ,
                     onClick = { viewModel.setStudyMode(StudyMode.QUIZ) },
-                    text = { Text("High-Yield Checklist") },
+                    text = { Text(stringResource(R.string.study_tab_quiz)) },
                     icon = { Icon(Icons.Default.Quiz, contentDescription = null) }
                 )
             }
@@ -333,7 +335,7 @@ fun StudyNotesScreen(
             item {
                 if (flashcards.isEmpty()) {
                     Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                        Text("No flashcards available for this note.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.study_no_flashcards), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 } else {
                     val card = flashcards[currentCardIndex % flashcards.size]
@@ -343,7 +345,7 @@ fun StudyNotesScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Text(
-                            text = "Card ${currentCardIndex + 1} of ${flashcards.size} • Tap card to flip",
+                            text = stringResource(R.string.study_card_counter, currentCardIndex + 1, flashcards.size),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -402,7 +404,7 @@ fun StudyNotesScreen(
                                         }
                                         Icon(
                                             imageVector = Icons.Default.Flip,
-                                            contentDescription = "Flip",
+                                            contentDescription = stringResource(R.string.study_card_btn_reveal),
                                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.size(18.dp)
                                         )
@@ -417,7 +419,7 @@ fun StudyNotesScreen(
                                     )
 
                                     Text(
-                                        text = if (isCardFlipped) "✓ ANSWER / EXPLANATION" else "❓ QUESTION / PROMPT",
+                                        text = if (isCardFlipped) stringResource(R.string.study_card_answer_prompt) else stringResource(R.string.study_card_question_prompt),
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         textAlign = TextAlign.Center,
@@ -436,24 +438,24 @@ fun StudyNotesScreen(
                             OutlinedButton(
                                 onClick = { viewModel.prevCard(flashcards.size) }
                             ) {
-                                Icon(Icons.Default.ArrowBack, contentDescription = "Previous")
+                                Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.study_card_btn_prev))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Text("Previous")
+                                Text(stringResource(R.string.study_card_btn_prev))
                             }
 
                             Button(
                                 onClick = { viewModel.flipCard() },
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
                             ) {
-                                Text(if (isCardFlipped) "Show Front" else "Reveal Answer")
+                                Text(if (isCardFlipped) stringResource(R.string.study_card_btn_show_front) else stringResource(R.string.study_card_btn_reveal))
                             }
 
                             OutlinedButton(
                                 onClick = { viewModel.nextCard(flashcards.size) }
                             ) {
-                                Text("Next")
+                                Text(stringResource(R.string.study_card_btn_next))
                                 Spacer(modifier = Modifier.width(6.dp))
-                                Icon(Icons.Default.ArrowForward, contentDescription = "Next")
+                                Icon(Icons.Default.ArrowForward, contentDescription = stringResource(R.string.study_card_btn_next))
                             }
                         }
                     }
@@ -475,13 +477,13 @@ fun StudyNotesScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
-                            text = "⚡ Highest-Yield Pre-Exam Checklist",
+                            text = stringResource(R.string.study_checklist_title),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "Review these high-yield bullets 10 minutes before your rounds or exam:",
+                            text = stringResource(R.string.study_checklist_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -531,7 +533,7 @@ fun StudyNotesScreen(
             // 1. Clinical Summary
             if (note.summary.isNotEmpty()) {
                 item {
-                    SectionCard(title = "Clinical Summary", icon = "📋") {
+                    SectionCard(title = stringResource(R.string.study_section_summary), icon = "📋") {
                         Text(
                             text = note.summary,
                             style = MaterialTheme.typography.bodyMedium,
@@ -544,7 +546,7 @@ fun StudyNotesScreen(
             // 2. Core Concepts
             if (note.coreConcepts.isNotEmpty()) {
                 item {
-                    SectionCard(title = "Core Concepts & Pathophysiology", icon = "🧬") {
+                    SectionCard(title = stringResource(R.string.study_section_core_concepts), icon = "🧬") {
                         note.coreConcepts.forEach { concept ->
                             BulletItem(text = concept)
                         }
@@ -555,7 +557,7 @@ fun StudyNotesScreen(
             // 3. Key Takeaways
             if (note.importantPoints.isNotEmpty()) {
                 item {
-                    SectionCard(title = "Key Lecture Takeaways", icon = "⭐") {
+                    SectionCard(title = stringResource(R.string.study_section_key_takeaways), icon = "⭐") {
                         note.importantPoints.forEach { point ->
                             BulletItem(text = point)
                         }
@@ -566,7 +568,7 @@ fun StudyNotesScreen(
             // 4. Classifications & Diagnostic Criteria
             if (note.classifications.isNotEmpty()) {
                 item {
-                    SectionCard(title = "Classifications & Criteria", icon = "📊") {
+                    SectionCard(title = stringResource(R.string.study_section_classifications), icon = "📊") {
                         note.classifications.forEach { item ->
                             ClassificationCard(item)
                         }
@@ -577,7 +579,7 @@ fun StudyNotesScreen(
             // 5. Clinical & Diagnostic Points
             if (note.clinicalPoints.isNotEmpty()) {
                 item {
-                    SectionCard(title = "Clinical Presentation & Diagnostics", icon = "🩺") {
+                    SectionCard(title = stringResource(R.string.study_section_clinical_points), icon = "🩺") {
                         note.clinicalPoints.forEach { item ->
                             ClinicalPointCard(item)
                         }
@@ -588,7 +590,7 @@ fun StudyNotesScreen(
             // 6. Management & Therapeutic Protocol
             if (note.management.isNotEmpty()) {
                 item {
-                    SectionCard(title = "Management & Therapeutics", icon = "💊") {
+                    SectionCard(title = stringResource(R.string.study_section_management), icon = "💊") {
                         note.management.forEach { item ->
                             ManagementCard(item)
                         }
@@ -599,9 +601,9 @@ fun StudyNotesScreen(
             // 7. Strict Numbers & Exact Doses (with [unclear] tags)
             if (note.numbersAndDoses.isNotEmpty()) {
                 item {
-                    SectionCard(title = "Numbers, Cutoffs & Exact Dosages", icon = "🔢") {
+                    SectionCard(title = stringResource(R.string.study_section_numbers_doses), icon = "🔢") {
                         Text(
-                            text = "Lecturer-verified values and dosages. Ambiguous items flagged as [unclear].",
+                            text = stringResource(R.string.study_section_numbers_doses_subtitle),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -616,7 +618,7 @@ fun StudyNotesScreen(
             // 8. Board Pearls & Buzzwords
             if (note.examEmphasis.isNotEmpty()) {
                 item {
-                    SectionCard(title = "Board Exam Pearls & Buzzwords", icon = "🎯") {
+                    SectionCard(title = stringResource(R.string.study_section_exam_emphasis), icon = "🎯") {
                         note.examEmphasis.forEach { item ->
                             ExamEmphasisCard(item)
                         }
@@ -627,7 +629,7 @@ fun StudyNotesScreen(
             // 9. Preserved Question & Answer Items
             if (note.questionAnswers.isNotEmpty()) {
                 item {
-                    SectionCard(title = "Preserved Question & Answer Items", icon = "❓") {
+                    SectionCard(title = stringResource(R.string.study_section_qa), icon = "❓") {
                         note.questionAnswers.forEach { item ->
                             QuestionAnswerCard(item)
                         }
@@ -791,7 +793,7 @@ fun ManagementCard(item: ManagementItem) {
             }
             if (item.rationale.isNotEmpty()) {
                 Text(
-                    text = "Rationale: ${item.rationale}",
+                    text = stringResource(R.string.study_management_rationale, item.rationale),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -854,7 +856,7 @@ fun NumberDoseCard(item: NumberDoseItem) {
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "[unclear] Lecturer was ambiguous; verify institution protocol",
+                        text = stringResource(R.string.study_unclear_warning),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.error,
                         fontWeight = FontWeight.Bold
@@ -876,13 +878,13 @@ fun ExamEmphasisCard(item: ExamEmphasisItem) {
     ) {
         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
-                text = "Topic: ${item.topic}",
+                text = stringResource(R.string.study_exam_topic, item.topic),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold
             )
             if (item.buzzword.isNotEmpty()) {
                 Text(
-                    text = "🎯 Buzzword: ${item.buzzword}",
+                    text = stringResource(R.string.study_exam_buzzword, item.buzzword),
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.primary
@@ -890,13 +892,13 @@ fun ExamEmphasisCard(item: ExamEmphasisItem) {
             }
             if (item.pearl.isNotEmpty()) {
                 Text(
-                    text = "💡 Board Pearl: ${item.pearl}",
+                    text = stringResource(R.string.study_exam_pearl, item.pearl),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
             if (item.trapOrWarning.isNotEmpty()) {
                 Text(
-                    text = "⚠️ Exam Trap: ${item.trapOrWarning}",
+                    text = stringResource(R.string.study_exam_trap, item.trapOrWarning),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -916,18 +918,18 @@ fun QuestionAnswerCard(item: QuestionAnswerItem) {
     ) {
         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(
-                text = "Q: ${item.question}",
+                text = stringResource(R.string.study_qa_question, item.question),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "A: ${item.answer}",
+                text = stringResource(R.string.study_qa_answer, item.answer),
                 style = MaterialTheme.typography.bodyMedium
             )
             if (item.lecturerNote.isNotEmpty()) {
                 Text(
-                    text = "Lecturer Note: ${item.lecturerNote}",
+                    text = stringResource(R.string.study_qa_lecturer_note, item.lecturerNote),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
