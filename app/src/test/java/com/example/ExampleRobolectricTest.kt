@@ -169,7 +169,10 @@ class ExampleRobolectricTest {
     @Test
     fun testFirebaseManagerWebClientIdPlaceholder() {
         assertNotNull(com.example.firebase.FirebaseManager.WEB_CLIENT_ID)
-        assertTrue(com.example.firebase.FirebaseManager.WEB_CLIENT_ID.contains("apps.googleusercontent.com"))
+        assertEquals(
+            "386460666392-mdl872rgt4lel8167vpo48t7kk6ohdot.apps.googleusercontent.com",
+            com.example.firebase.FirebaseManager.WEB_CLIENT_ID
+        )
     }
 
     @Test

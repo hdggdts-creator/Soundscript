@@ -87,8 +87,8 @@ sealed class LoginViewMode {
 
 class LoginActivity : ComponentActivity() {
 
-    // Placeholder variable for the WEB_CLIENT_ID
-    val WEB_CLIENT_ID = "YOUR_WEB_CLIENT_ID.apps.googleusercontent.com"
+    // Web Client ID for Credential Manager Google Sign-In
+    val WEB_CLIENT_ID = "386460666392-mdl872rgt4lel8167vpo48t7kk6ohdot.apps.googleusercontent.com"
 
     lateinit var credentialManager: CredentialManager
     private var errorMessageState = mutableStateOf<String?>(null)
@@ -96,7 +96,7 @@ class LoginActivity : ComponentActivity() {
     private var viewModeState = mutableStateOf<LoginViewMode>(LoginViewMode.Login)
 
     companion object {
-        const val DEFAULT_WEB_CLIENT_ID = "YOUR_WEB_CLIENT_ID.apps.googleusercontent.com"
+        const val DEFAULT_WEB_CLIENT_ID = "386460666392-mdl872rgt4lel8167vpo48t7kk6ohdot.apps.googleusercontent.com"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

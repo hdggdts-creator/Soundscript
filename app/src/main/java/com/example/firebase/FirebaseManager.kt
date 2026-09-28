@@ -117,7 +117,7 @@ class FirebaseManager(private val context: Context) {
     }
 
     companion object {
-        const val WEB_CLIENT_ID = "YOUR_WEB_CLIENT_ID.apps.googleusercontent.com"
+        const val WEB_CLIENT_ID = "386460666392-mdl872rgt4lel8167vpo48t7kk6ohdot.apps.googleusercontent.com"
     }
 
     /**
