@@ -133,9 +133,9 @@ class FirebaseManager(private val context: Context) {
         try {
             val clientId = serverClientId ?: WEB_CLIENT_ID
             val googleIdOption = GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(false)
                 .setServerClientId(clientId)
                 .setAutoSelectEnabled(false)
+                .setFilterByAuthorizedAccounts(false)
                 .build()
 
             val request = GetCredentialRequest.Builder()

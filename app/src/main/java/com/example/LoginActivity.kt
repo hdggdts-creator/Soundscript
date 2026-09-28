@@ -103,6 +103,7 @@ class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         com.example.ui.theme.ThemeManager.initTheme(this)
+        com.example.ui.locale.LanguageManager.initLanguage(this)
         enableEdgeToEdge()
 
         // 1. Instantiate the CredentialManager
@@ -169,9 +170,9 @@ class LoginActivity : ComponentActivity() {
         return try {
             // 2. Configure a GetGoogleIdOption (with setFilterByAuthorizedAccounts(false) so new users can create an account)
             val googleIdOption = GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(false)
                 .setServerClientId(WEB_CLIENT_ID)
                 .setAutoSelectEnabled(false)
+                .setFilterByAuthorizedAccounts(false)
                 .build()
 
             // Configure a GetCredentialRequest

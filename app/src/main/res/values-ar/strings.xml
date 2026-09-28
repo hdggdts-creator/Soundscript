@@ -166,6 +166,14 @@
     <string name="settings_theme_light">الوضع الفاتح</string>
     <string name="settings_theme_dark">الوضع الداكن</string>
     <string name="settings_theme_system">الافتراضي للنظام</string>
+
+    <!-- Language Settings -->
+    <string name="settings_language_title">لغة التطبيق والتعريب</string>
+    <string name="settings_language_desc">اختر لغة واجهة التطبيق المفضلة. يمكنك التبديل بين العربية والإنجليزية، أو مطابقة إعدادات النظام للجهاز.</string>
+    <string name="settings_language_display_label">اللغة / Language</string>
+    <string name="settings_language_system">افتراضي النظام</string>
+    <string name="settings_language_en">English (الإنجليزية)</string>
+    <string name="settings_language_ar">العربية (Arabic)</string>
     <string name="settings_privacy_title">بنية الخصوصية وأمان الطلاب</string>
     <string name="settings_privacy_b1_title">تخزين مزدوج عبر SQLite محلياً و Cloud Firestore سحابياً</string>
     <string name="settings_privacy_b1_desc">يتم تخزين جميع الملاحظات محلياً عبر Room مع نسخ احتياطي فوري إلى مجموعتك الخاصة في Cloud Firestore.</string>

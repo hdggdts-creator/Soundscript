@@ -152,9 +152,9 @@ class ExampleRobolectricTest {
         assertTrue(activity.WEB_CLIENT_ID.isNotEmpty())
 
         val googleIdOption = com.google.android.libraries.identity.googleid.GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
             .setServerClientId(activity.WEB_CLIENT_ID)
             .setAutoSelectEnabled(false)
+            .setFilterByAuthorizedAccounts(false)
             .build()
 
         assertEquals(activity.WEB_CLIENT_ID, googleIdOption.serverClientId)
@@ -252,6 +252,33 @@ class ExampleRobolectricTest {
         assertEquals("ملخصات المذاكرة", localizedContext.getString(R.string.nav_study_notes))
         assertEquals("المكتبة", localizedContext.getString(R.string.nav_library))
         assertEquals("الإعدادات", localizedContext.getString(R.string.nav_settings))
+        assertEquals("لغة التطبيق والتعريب", localizedContext.getString(R.string.settings_language_title))
+        assertEquals("العربية (Arabic)", localizedContext.getString(R.string.settings_language_ar))
+    }
+
+    @Test
+    fun testLanguageManagerPreferenceAndOptions() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        com.example.ui.locale.LanguageManager.initLanguage(context)
+
+        // Options should include system, en, ar
+        val options = com.example.ui.locale.LanguageManager.LANGUAGE_OPTIONS
+        assertTrue(options.contains(com.example.ui.locale.LanguageManager.LANG_SYSTEM))
+        assertTrue(options.contains(com.example.ui.locale.LanguageManager.LANG_EN))
+        assertTrue(options.contains(com.example.ui.locale.LanguageManager.LANG_AR))
+
+        // Set to Arabic
+        com.example.ui.locale.LanguageManager.setLanguagePreference(context, com.example.ui.locale.LanguageManager.LANG_AR, recreateActivity = false)
+        assertEquals(com.example.ui.locale.LanguageManager.LANG_AR, com.example.ui.locale.LanguageManager.getLanguagePreference(context))
+        assertEquals(com.example.ui.locale.LanguageManager.LANG_AR, com.example.ui.locale.LanguageManager.currentLanguage.value)
+
+        // Set to English
+        com.example.ui.locale.LanguageManager.setLanguagePreference(context, com.example.ui.locale.LanguageManager.LANG_EN, recreateActivity = false)
+        assertEquals(com.example.ui.locale.LanguageManager.LANG_EN, com.example.ui.locale.LanguageManager.getLanguagePreference(context))
+
+        // Set back to System
+        com.example.ui.locale.LanguageManager.setLanguagePreference(context, com.example.ui.locale.LanguageManager.LANG_SYSTEM, recreateActivity = false)
+        assertEquals(com.example.ui.locale.LanguageManager.LANG_SYSTEM, com.example.ui.locale.LanguageManager.getLanguagePreference(context))
     }
 }
 

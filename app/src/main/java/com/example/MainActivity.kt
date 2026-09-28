@@ -70,6 +70,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         com.example.ui.theme.ThemeManager.initTheme(this)
+        com.example.ui.locale.LanguageManager.initLanguage(this)
         enableEdgeToEdge()
 
         setContent {

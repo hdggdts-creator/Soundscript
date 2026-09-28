@@ -166,6 +166,14 @@
     <string name="settings_theme_light">Light Mode</string>
     <string name="settings_theme_dark">Dark Mode</string>
     <string name="settings_theme_system">System Default</string>
+
+    <!-- Language Settings -->
+    <string name="settings_language_title">App Language &amp; Localization</string>
+    <string name="settings_language_desc">Select your preferred app interface language. You can choose Arabic (العربية), English, or match your device\'s system settings.</string>
+    <string name="settings_language_display_label">Language / اللغة</string>
+    <string name="settings_language_system">System Default</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_ar">العربية (Arabic)</string>
     <string name="settings_privacy_title">Privacy &amp; Student Security Architecture</string>
     <string name="settings_privacy_b1_title">Local SQLite &amp; Cloud Firestore Dual Persistence</string>
     <string name="settings_privacy_b1_desc">All notes are cached on device via Room and backed up in real time to your private Cloud Firestore collection.</string>

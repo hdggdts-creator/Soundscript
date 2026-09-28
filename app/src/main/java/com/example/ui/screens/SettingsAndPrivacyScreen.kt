@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.MedicalServices
@@ -74,6 +75,7 @@ import androidx.compose.ui.unit.sp
 import com.example.R
 import com.example.firebase.UserProfile
 import com.example.ui.SoundScriptViewModel
+import com.example.ui.locale.LanguageManager
 import com.example.ui.theme.ThemeManager
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -570,7 +572,133 @@ fun SettingsAndPrivacyScreen(
             }
         }
 
-        // --- 4. PRIVACY & DATA LOCALITY ---
+        // --- 4. APP LANGUAGE & LOCALIZATION (ARABIC / ENGLISH / SYSTEM) ---
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("language_settings_card"),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            shape = RoundedCornerShape(16.dp),
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Language,
+                        contentDescription = stringResource(R.string.settings_language_title),
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.settings_language_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Text(
+                    text = stringResource(R.string.settings_language_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                var languageDropdownExpanded by remember { mutableStateOf(false) }
+                val currentLangCode by LanguageManager.currentLanguage.collectAsState()
+
+                ExposedDropdownMenuBox(
+                    expanded = languageDropdownExpanded,
+                    onExpandedChange = { languageDropdownExpanded = !languageDropdownExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = when (currentLangCode) {
+                            LanguageManager.LANG_EN -> stringResource(R.string.settings_language_en)
+                            LanguageManager.LANG_AR -> stringResource(R.string.settings_language_ar)
+                            else -> stringResource(R.string.settings_language_system)
+                        },
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.settings_language_display_label)) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Language,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = languageDropdownExpanded) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
+                            .testTag("language_selector_dropdown"),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = languageDropdownExpanded,
+                        onDismissRequest = { languageDropdownExpanded = false }
+                    ) {
+                        LanguageManager.LANGUAGE_OPTIONS.forEach { option ->
+                            val optionLabel = when (option) {
+                                LanguageManager.LANG_EN -> stringResource(R.string.settings_language_en)
+                                LanguageManager.LANG_AR -> stringResource(R.string.settings_language_ar)
+                                else -> stringResource(R.string.settings_language_system)
+                            }
+                            DropdownMenuItem(
+                                text = { Text(optionLabel) },
+                                onClick = {
+                                    LanguageManager.setLanguagePreference(context, option)
+                                    languageDropdownExpanded = false
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Language,
+                                        contentDescription = null
+                                    )
+                                },
+                                modifier = Modifier.testTag("language_option_$option")
+                            )
+                        }
+                    }
+                }
+
+                // Quick selector chips for one-tap switching: English, العربية, System Default
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    LanguageManager.LANGUAGE_OPTIONS.forEach { option ->
+                        val optionLabel = when (option) {
+                            LanguageManager.LANG_EN -> stringResource(R.string.settings_language_en)
+                            LanguageManager.LANG_AR -> stringResource(R.string.settings_language_ar)
+                            else -> stringResource(R.string.settings_language_system)
+                        }
+                        FilterChip(
+                            selected = currentLangCode == option,
+                            onClick = { LanguageManager.setLanguagePreference(context, option) },
+                            label = { Text(optionLabel, fontSize = 11.sp) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Language,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
+                            ),
+                            modifier = Modifier.testTag("language_chip_$option")
+                        )
+                    }
+                }
+            }
+        }
+
+        // --- 5. PRIVACY & DATA LOCALITY ---
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
